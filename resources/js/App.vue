@@ -1,8 +1,6 @@
 <template>
   <div id="app">
-    DESDE VUEEEE
-    <button @click="increment">Clicks: {{ count }}</button>
-    <!-- <router-view /> -->
+    <router-view />
   </div>
 </template>
 

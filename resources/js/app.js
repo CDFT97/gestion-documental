@@ -1,24 +1,32 @@
-import { createApp } from "vue";
-import { createRouter, createWebHistory } from "vue-router";
-import axios from "axios";
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import Toast from 'vue-toastification'
+import 'vue-toastification/dist/index.css'
+import './api/axios'
+import App from './App.vue'
+import router from './router/index.js'
 
-// axios
-window.axios = axios;
-axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
-axios.defaults.withCredentials = true;
+const app = createApp(App)
 
-// main component
-import App from "./App.vue";
+const pinia = createPinia()
+app.use(pinia)
 
-// import routes
-import routes from "./router/index.js";
+// Configurar Toast
+app.use(Toast, {
+  position: 'top-right',
+  timeout: 3000,
+  closeOnClick: true,
+  pauseOnFocusLoss: true,
+  pauseOnHover: true,
+  draggable: true,
+  draggablePercent: 0.6,
+  showCloseButtonOnHover: false,
+  hideProgressBar: false,
+  closeButton: 'button',
+  icon: true,
+  rtl: false
+})
 
-const router = createRouter({
-    history: createWebHistory(),
-    routes,
-});
+app.use(router)
 
-// create and mount the app
-const app = createApp(App);
-app.use(router);
-app.mount("#app");
+app.mount('#app')
