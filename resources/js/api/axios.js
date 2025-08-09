@@ -35,7 +35,6 @@ apiClient.interceptors.response.use(
   (error) => {
     const toast = useToast()
 
-    // Manejar diferentes tipos de errores
     if (error.response) {
       const { status, data } = error.response
 
@@ -64,7 +63,6 @@ apiClient.interceptors.response.use(
           break
 
         case 422:
-          // Errores de validación - se manejan en cada componente
           break
 
         case 429:
@@ -90,24 +88,17 @@ apiClient.interceptors.response.use(
   }
 )
 
-// Funciones helper para diferentes tipos de requests
 export const api = {
-  // GET request
   get: (url, config = {}) => apiClient.get(url, config),
 
-  // POST request
   post: (url, data = {}, config = {}) => apiClient.post(url, data, config),
 
-  // PUT request
   put: (url, data = {}, config = {}) => apiClient.put(url, data, config),
 
-  // PATCH request
   patch: (url, data = {}, config = {}) => apiClient.patch(url, data, config),
 
-  // DELETE request
   delete: (url, config = {}) => apiClient.delete(url, config),
 
-  // Upload file
   upload: (url, formData, config = {}) => {
     return apiClient.post(url, formData, {
       ...config,
