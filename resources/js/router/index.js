@@ -3,6 +3,8 @@ import { useAuth } from '../composables/useAuth'
 
 const Login = () => import('../views/auth/Login.vue')
 const Register = () => import('../views/auth/Register.vue')
+const ForgotPassword = () => import('../views/auth/ForgotPassword.vue')
+const ResetPassword = () => import('../views/auth/ResetPassword.vue')
 const Dashboard = () => import('../views/Dashboard.vue')
 
 // Futuras vistas (las crearemos más adelante)
@@ -46,6 +48,26 @@ const routes = [
       requiresAuth: true,
       title: 'Dashboard',
       breadcrumb: 'Dashboard'
+    }
+  },
+  {
+    path: '/forgot-password',
+    name: 'ForgotPassword',
+    component: ForgotPassword,
+    meta: { 
+      requiresGuest: true,
+      title: 'Recuperar Contraseña',
+      layout: 'auth'
+    }
+  },
+  {
+    path: '/reset-password',
+    name: 'ResetPassword',
+    component: ResetPassword,
+    meta: { 
+      requiresGuest: true,
+      title: 'Nueva Contraseña',
+      layout: 'auth'
     }
   },
   // {

@@ -1,11 +1,8 @@
 <template>
   <div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-    <Header 
-      icon="📄"
-      title="Iniciar Sesión"
-      subtitle="Accede a tu cuenta de gestión documental"
-    />
-    <LoginForm />
+    <Header icon="🔐" title="¿Olvidaste tu contraseña?"
+      subtitle="Te enviaremos un link para restablecer tu contraseña" />
+    <ForgotPasswordForm />
     <Footer />
   </div>
 </template>
@@ -13,11 +10,11 @@
 <script setup>
 import { onMounted } from 'vue'
 import Header from '@/views/auth/components/Header.vue'
-import LoginForm from '@/views/auth/components/LoginForm.vue'
+import ForgotPasswordForm from '@/views/auth/components/ForgotPasswordForm.vue'
 import Footer from '@/views/auth/components/Footer.vue'
 
 onMounted(() => {
-  document.title = 'Iniciar Sesión - Gestión Documental'
+  document.title = 'Recuperar Contraseña - Gestión Documental'
 })
 </script>
 
