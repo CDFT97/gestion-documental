@@ -5,14 +5,22 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\ForgotPasswordRequest;
+use App\Http\Requests\ResetPasswordRequest;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Str;
+use App\Traits\HandlesPasswordResponses;
 
 class AuthController extends Controller
 {
+    use HandlesPasswordResponses;
+
     protected $userRepository;
 
     public function __construct(UserRepository $userRepository)
@@ -68,5 +76,32 @@ class AuthController extends Controller
     public function user(Request $request)
     {
         return response()->json($request->user());
+    }
+
+    public function forgotPassword(ForgotPasswordRequest $request)
+    {
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        return $this->handlePasswordResponse($status, 'forgot');
+    }
+
+    public function resetPassword(ResetPasswordRequest $request)
+    {
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->setRememberToken(Str::random(60));
+
+                $user->save();
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        return $this->handlePasswordResponse($status, 'reset');
     }
 }
