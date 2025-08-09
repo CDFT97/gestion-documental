@@ -1,0 +1,3 @@
+<template>
+  Action Card
+</template>

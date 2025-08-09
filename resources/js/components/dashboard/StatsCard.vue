@@ -1,0 +1,3 @@
+<template>
+  Stats Card
+</template>
