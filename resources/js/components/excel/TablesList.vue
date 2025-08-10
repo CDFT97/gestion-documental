@@ -185,15 +185,12 @@ const props = defineProps({
 
 const emit = defineEmits(['refresh', 'delete', 'page-change'])
 
-// Use tables composable for additional operations
-const { exportTable, duplicateTable } = useTables()
+const { exportTable } = useTables()
 
-// Local state
 const openDropdown = ref(null)
 const showDeleteModal = ref(false)
 const tableToDelete = ref(null)
 
-// Methods
 const getStatusBadge = (status) => {
   const badges = {
     completed: 'px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full',
@@ -222,7 +219,6 @@ const formatFileSize = (bytes) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
-// Dropdown management
 const toggleDropdown = (tableId) => {
   openDropdown.value = openDropdown.value === tableId ? null : tableId
 }
@@ -231,19 +227,11 @@ const closeDropdown = () => {
   openDropdown.value = null
 }
 
-// Calcular posición del dropdown según el espacio disponible
-const getDropdownPosition = (tableId) => {
-  // Por defecto, mostrar hacia arriba en las cards (ya que están en la parte inferior)
-  return 'bottom-full mb-2'
-}
-
-// Table actions
 const handleExportTable = async (table) => {
   closeDropdown()
   await exportTable(table.id)
 }
 
-// Delete operations
 const confirmDelete = (table) => {
   tableToDelete.value = table
   showDeleteModal.value = true
@@ -260,7 +248,6 @@ const cancelDelete = () => {
   tableToDelete.value = null
 }
 
-// Navigation
 const scrollToUpload = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -269,14 +256,12 @@ const handlePageChange = (url) => {
   emit('page-change', url)
 }
 
-// Click outside to close dropdown
 const handleClickOutside = (event) => {
   if (!event.target.closest('.relative')) {
     closeDropdown()
   }
 }
 
-// Lifecycle
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
 })

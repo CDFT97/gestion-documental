@@ -86,7 +86,6 @@ export function useDocuments() {
     clearFilters()
   }
 
-  // Obtener lista de documentos con filtros y paginación
   const getDocuments = async (page = 1) => {
     loading.value = true
     clearErrors()
@@ -101,7 +100,7 @@ export function useDocuments() {
 
       documents.value = response.data.data
 
-      // Actualizar información de paginación
+      // Update pagination information
       Object.assign(pagination, {
         current_page: response.data.current_page,
         last_page: response.data.last_page,
@@ -121,7 +120,6 @@ export function useDocuments() {
     }
   }
 
-  // Obtener un documento específico
   const getDocument = async (id) => {
     loading.value = true
     clearErrors()
@@ -139,16 +137,13 @@ export function useDocuments() {
     }
   }
 
-  // Subir documento
   const uploadDocument = async (file, metadata = {}) => {
-    // Validar archivo antes de subir
     const fileValidation = validateFile(file)
     if (!fileValidation.isValid) {
       errors.value = { file: fileValidation.errors }
       return { success: false, errors: fileValidation.errors }
     }
 
-    // Validar metadatos
     const metadataValidation = validateDocumentMetadata(metadata)
     if (!metadataValidation.isValid) {
       errors.value = { metadata: metadataValidation.errors }
@@ -163,10 +158,8 @@ export function useDocuments() {
 
       const response = await api.upload('/api/documents/upload', formData)
 
-      // Agregar el nuevo documento al inicio de la lista
       documents.value.unshift(response.data.document)
 
-      // Actualizar el total
       pagination.total += 1
 
       toast.success(response.data.message || 'Documento subido exitosamente')
@@ -185,9 +178,7 @@ export function useDocuments() {
     }
   }
 
-  // Actualizar documento
   const updateDocument = async (id, data) => {
-    // Validar datos de actualización
     const validation = validateDocumentMetadata(data)
     if (!validation.isValid) {
       errors.value = { update: validation.errors }
@@ -200,13 +191,11 @@ export function useDocuments() {
     try {
       const response = await api.put(`/api/documents/${id}`, validation.cleanedData)
 
-      // Actualizar el documento en la lista
       const index = documents.value.findIndex(doc => doc.id === id)
       if (index !== -1) {
         documents.value[index] = response.data.document
       }
 
-      // Actualizar documento actual si coincide
       if (currentDocument.value?.id === id) {
         currentDocument.value = response.data.document
       }
@@ -223,7 +212,6 @@ export function useDocuments() {
     }
   }
 
-  // Eliminar documento
   const deleteDocument = async (id) => {
     deleting.value = true
     clearErrors()
@@ -231,15 +219,12 @@ export function useDocuments() {
     try {
       const response = await api.delete(`/api/documents/${id}`)
 
-      // Remover de la lista
       documents.value = documents.value.filter(doc => doc.id !== id)
 
-      // Limpiar documento actual si coincide
       if (currentDocument.value?.id === id) {
         currentDocument.value = null
       }
 
-      // Actualizar total
       pagination.total = Math.max(0, pagination.total - 1)
 
       toast.success(response.data.message || 'Documento eliminado exitosamente')
@@ -254,7 +239,6 @@ export function useDocuments() {
     }
   }
 
-  // Obtener categorías disponibles
   const getCategories = async () => {
     try {
       const response = await api.get('/api/documents/categories')
@@ -267,33 +251,27 @@ export function useDocuments() {
     }
   }
 
-  // Obtener URL de preview del documento con token
   const getPreviewUrl = (id) => {
     const urlBase =  window.location.origin;
     const token = localStorage.getItem('token')
-    // Agregar token como parámetro de consulta para iframe
     return `${urlBase}/api/documents/${id}/preview?token=${encodeURIComponent(token)}`
   }
 
-  // Descargar documento
   const downloadDocument = async (id, filename) => {
     try {
       const response = await api.get(`/api/documents/${id}/preview/download`, {
         responseType: 'blob'
       })
 
-      // Crear blob URL
       const blob = new Blob([response.data], { type: 'application/pdf' })
       const url = window.URL.createObjectURL(blob)
 
-      // Crear enlace temporal y hacer click
       const link = document.createElement('a')
       link.href = url
       link.download = filename || 'documento.pdf'
       document.body.appendChild(link)
       link.click()
 
-      // Limpiar
       document.body.removeChild(link)
       window.URL.revokeObjectURL(url)
 
@@ -304,21 +282,17 @@ export function useDocuments() {
     }
   }
 
-  // Buscar documentos
   const searchDocuments = async (searchTerm) => {
     filters.search = searchTerm
-    return await getDocuments(1) // Resetear a página 1
+    return await getDocuments(1) 
   }
 
-  // Filtrar por categoría
   const filterByCategory = async (category) => {
     filters.category = category
     return await getDocuments(1)
   }
 
-  // Filtrar por rango de fechas
   const filterByDateRange = async (dateFrom, dateTo) => {
-    // Validar rango de fechas
     const validation = validateDateRange(dateFrom, dateTo)
     if (!validation.isValid) {
       errors.value = { dateRange: validation.errors }
@@ -351,7 +325,6 @@ export function useDocuments() {
     return { success: false, message: 'Ya está en la primera página' }
   }
 
-  // Cambiar elementos por página
   const changePerPage = async (perPage) => {
     filters.per_page = perPage
     pagination.per_page = perPage
@@ -371,7 +344,7 @@ export function useDocuments() {
   }
 
   return {
-    // Estado
+    // State
     loading: computed(() => isLoading.value),
     uploading,
     deleting,
@@ -388,7 +361,7 @@ export function useDocuments() {
     isLastPage,
     isFirstPage,
 
-    // Métodos principales
+    // Methods
     getDocuments,
     getDocument,
     uploadDocument,
@@ -396,25 +369,25 @@ export function useDocuments() {
     deleteDocument,
     getCategories,
 
-    // Utilidades
+    // Utilities
     getPreviewUrl,
     downloadDocument,
     validateDocumentFile,
     formatFileSize,
 
-    // Filtros y búsqueda
+    // Filters and search
     searchDocuments,
     filterByCategory,
     filterByDateRange,
     clearFilters,
 
-    // Paginación
+    // Pagination
     goToPage,
     nextPage,
     previousPage,
     changePerPage,
 
-    // Otros
+    // Others
     refreshDocuments,
     clearState,
     clearErrors

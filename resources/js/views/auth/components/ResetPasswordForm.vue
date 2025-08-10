@@ -192,12 +192,11 @@ const parseUrlParams = () => {
   }
 }
 
-// Lifecycle
 onMounted(() => {
   parseUrlParams()
   clearErrors()
 
-  // Focus en el campo password
+  // Focus on the password field
   const passwordInput = document.getElementById('password')
   if (passwordInput && !tokenError.value) {
     passwordInput.focus()

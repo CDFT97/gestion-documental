@@ -36,10 +36,10 @@ const props = defineProps({
   }
 })
 
-// Determinar si es un tamaño custom (con px) o predefinido
+// Determine whether it is a custom size (with px) or a predefined size.
 const customSize = computed(() => props.size.includes('px'))
 
-// Tamaños predefinidos
+// Predefined sizes
 const predefinedSizes = {
   xs: 'h-3 w-3',
   sm: 'h-4 w-4',
@@ -51,7 +51,7 @@ const predefinedSizes = {
 const spinnerClass = computed(() => [
   'animate-spin',
   props.color,
-  // Solo aplicar clase de tamaño si no es custom
+  // Only apply size class if it is not custom
   !customSize.value ? predefinedSizes[props.size] : ''
 ])
 

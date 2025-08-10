@@ -71,17 +71,6 @@ export function useProfile() {
     }
   }
 
-  // Obtener estadísticas del usuario
-  const getStats = async () => {
-    try {
-      const response = await api.get('/api/user/stats')
-      stats.value = response.data
-      return stats.value
-    } catch (error) {
-      console.error('Error loading stats:', error)
-      return null
-    }
-  }
 
   return {
     // State

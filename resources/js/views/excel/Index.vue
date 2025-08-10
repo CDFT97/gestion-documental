@@ -108,7 +108,6 @@ const handlePageChange = async (url) => {
   }
 }
 
-// Search with debounce
 const handleSearch = () => {
   if (searchTimeout.value) {
     clearTimeout(searchTimeout.value)

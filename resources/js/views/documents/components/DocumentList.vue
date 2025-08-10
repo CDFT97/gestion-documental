@@ -238,7 +238,6 @@ import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import { formatDate } from '@/utils/formatters'
 import { formatFileSize } from '@/utils/documentUtils'
 
-// Props
 const props = defineProps({
   documents: {
     type: Array,
@@ -254,16 +253,13 @@ const props = defineProps({
   }
 })
 
-// Emits
 const emit = defineEmits(['refresh', 'delete', 'page-change', 'view', 'edit'])
 
-// Estado local
 const viewMode = ref('list') // 'list' o 'grid'
 const showDeleteModal = ref(false)
 const documentToDelete = ref(null)
 const deleting = ref(false)
 
-// Métodos
 const handleDelete = (document) => {
   documentToDelete.value = document
   showDeleteModal.value = true
@@ -302,12 +298,10 @@ const getVisiblePages = () => {
   const pages = []
 
   if (last <= 7) {
-    // Mostrar todas las páginas si son pocas
     for (let i = 1; i <= last; i++) {
       pages.push(i)
     }
   } else {
-    // Mostrar páginas con elipsis
     pages.push(1)
 
     if (current > 4) {

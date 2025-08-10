@@ -93,7 +93,6 @@ const props = defineProps({
 
 defineEmits(['process', 'cancel'])
 
-// Format file size
 const formatFileSize = (bytes) => {
   if (bytes === 0) return '0 Bytes'
 
@@ -104,7 +103,6 @@ const formatFileSize = (bytes) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
-// Format cell value for display
 const formatCellValue = (value) => {
   if (typeof value === 'boolean') {
     return value ? 'Verdadero' : 'Falso'
@@ -117,7 +115,6 @@ const formatCellValue = (value) => {
   return value
 }
 
-// Get cell styling based on content
 const getCellClass = (value) => {
   if (typeof value === 'number') {
     return 'text-blue-600 font-mono'

@@ -74,7 +74,6 @@ import { useProfile } from '../../../composables/useProfile'
 import { useAuthStore } from '../../../stores/auth'
 import { LoadingSpinner } from '../../../components/ui'
 
-// Props
 const props = defineProps({
   user: {
     type: Object,
@@ -82,31 +81,25 @@ const props = defineProps({
   }
 })
 
-// Stores y composables
 const authStore = useAuthStore()
 const { loading, errors, updateProfile, clearErrors } = useProfile()
 
-// State local
 const originalForm = ref({})
 
-// Form data
 const form = reactive({
   name: '',
   email: ''
 })
 
-// Computed
 const hasChanges = computed(() => {
   return JSON.stringify(form) !== JSON.stringify(originalForm.value)
 })
 
-// Methods
 const initializeForm = () => {
   if (props.user) {
     form.name = props.user.name || ''
     form.email = props.user.email || ''
 
-    // Guardar copia del estado inicial
     originalForm.value = { ...form }
   }
 }
@@ -122,15 +115,12 @@ const handleSubmit = async () => {
   const result = await updateProfile(form)
 
   if (result.success) {
-    // Actualizar el estado inicial con los nuevos datos
     originalForm.value = { ...form }
 
-    // Actualizar el usuario en el authStore
     authStore.updateUser(result.user)
   }
 }
 
-// Watch for user prop changes
 watch(() => props.user, (newUser) => {
   if (newUser) {
     initializeForm()
