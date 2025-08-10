@@ -64,8 +64,8 @@ const router = useRouter()
 const { user } = useAuth()
 
 const stats = ref({
-  tables: 0,
-  documents: 0,
+  tables: user.value?.tables.length || 0,
+  documents: user.value?.documents.length || 0,
   records: 0,
   storage: '0 MB'
 })
@@ -78,9 +78,6 @@ const navigateTo = (path) => {
 
 onMounted(() => {
   document.title = 'Dashboard - Gestión Documental'
-
-  // TODO: Cargar stats reales desde API
-  // loadDashboardStats()
 })
 </script>
 

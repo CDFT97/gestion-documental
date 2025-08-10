@@ -24,6 +24,11 @@ class User extends Authenticatable
         'password',
     ];
 
+    protected $with = [
+        'tables',
+        'documents'
+    ];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -51,5 +56,10 @@ class User extends Authenticatable
     public function tables()
     {
         return $this->hasMany(DynamicTable::class);
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
     }
 }
