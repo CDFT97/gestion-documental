@@ -4,6 +4,12 @@ import { useAuth } from '../composables/useAuth'
 export const useAuthStore = defineStore('auth', () => {
   const auth = useAuth()
 
+  const updateUser = (userData) => {
+    if (auth.user.value) {
+      auth.user.value = { ...auth.user.value, ...userData }
+    }
+  }
+
   return {
     // State
     user: auth.user,
@@ -18,5 +24,6 @@ export const useAuthStore = defineStore('auth', () => {
     logout: auth.logout,
     checkAuth: auth.checkAuth,
     clearErrors: auth.clearErrors,
+    updateUser,
   }
 })

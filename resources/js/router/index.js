@@ -8,13 +8,13 @@ const ResetPassword = () => import('../views/auth/ResetPassword.vue')
 const Dashboard = () => import('../views/Dashboard.vue')
 const TableView = () => import('../views/excel/TableView.vue')
 const Tables = () => import('../views/excel/Index.vue')
+const Profile = () => import('../views/profile/Index.vue')
 
 // Futuras vistas (las crearemos más adelante)
 // const Tables = () => import('../views/Tables.vue')
 // const TableDetail = () => import('../views/TableDetail.vue')
 // const Documents = () => import('../views/Documents.vue')
 // const DocumentViewer = () => import('../views/DocumentViewer.vue')
-// const Profile = () => import('../views/Profile.vue')
 
 // Definir rutas
 const routes = [
@@ -92,18 +92,16 @@ const routes = [
       breadcrumb: 'Tablas'
     }
   },
-  // {
-  //   path: '/tables/:id',
-  //   name: 'TableDetail',
-  //   component: TableDetail,
-  //   meta: {
-  //     requiresAuth: true,
-  //     title: 'Detalle de Tabla',
-  //     breadcrumb: 'Detalle'
-  //   },
-  //   props: true
-  // },
-
+   {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile,
+    meta: {
+      requiresAuth: true,
+      title: 'Mi Perfil',
+      breadcrumb: 'Perfil'
+    }
+  },
   // // Gestión de documentos PDF
   // {
   //   path: '/documents',
@@ -125,18 +123,6 @@ const routes = [
   //     breadcrumb: 'Visor'
   //   },
   //   props: true
-  // },
-
-  // // Perfil de usuario
-  // {
-  //   path: '/profile',
-  //   name: 'Profile',
-  //   component: Profile,
-  //   meta: {
-  //     requiresAuth: true,
-  //     title: 'Mi Perfil',
-  //     breadcrumb: 'Perfil'
-  //   }
   // },
   {
     path: '/:pathMatch(.*)*',
