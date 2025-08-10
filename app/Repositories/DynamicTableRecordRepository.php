@@ -23,21 +23,24 @@ class DynamicTableRecordRepository extends BaseRepository
   ): LengthAwarePaginator {
     $query = $this->model->where('dynamic_table_id', $tableId);
 
+    // Búsqueda general case-insensitive
     if (!empty($filters['search'])) {
       $searchTerm = '%' . $filters['search'] . '%';
       $query->where(function ($q) use ($searchTerm) {
-        $q->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.*')) LIKE ?", [$searchTerm]);
+        $q->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(data, '$.*'))) LIKE ?", [$searchTerm]);
       });
     }
 
+    // Filtros de columna case-insensitive
     if (!empty($filters['column_filters'])) {
       foreach ($filters['column_filters'] as $column => $value) {
         if (!empty($value)) {
-          $query->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.{$column}')) LIKE ?", ["%{$value}%"]);
+          $query->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(data, '$.{$column}'))) LIKE ?", ["%{$value}%"]);
         }
       }
     }
 
+    // Ordenamiento
     if ($sortBy !== 'id') {
       $query->orderByRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.{$sortBy}')) {$sortDirection}");
     } else {

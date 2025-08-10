@@ -120,7 +120,7 @@ const handleSearch = () => {
     } else {
       await loadTables()
     }
-  }, 300)
+  }, 500)
 }
 
 onMounted(() => {

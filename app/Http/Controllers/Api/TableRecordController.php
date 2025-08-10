@@ -34,9 +34,18 @@ class TableRecordController extends Controller
         $sortDirection = $request->get('sort_direction', 'asc');
 
         $filters = [
-            'search' => $request->get('search'),
-            'column_filters' => $request->get('column_filters', [])
+            'search' => $request->get('search') ? strtolower(trim($request->get('search'))) : null,
+            'column_filters' => []
         ];
+
+        $columnFilters = $request->get('column_filters', []);
+        if (is_array($columnFilters)) {
+            foreach ($columnFilters as $column => $value) {
+                if (!empty($value)) {
+                    $filters['column_filters'][$column] = strtolower(trim($value));
+                }
+            }
+        }
 
         $records = $this->recordRepository->getByTablePaginated(
             $tableId,
