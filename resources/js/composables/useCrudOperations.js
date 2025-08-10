@@ -5,7 +5,6 @@ import { useToast } from 'vue-toastification'
 export function useCrudOperations(tableId) {
   const toast = useToast()
 
-  // State
   const records = ref(null)
   const selectedRecords = ref([])
   const loading = ref(false)
@@ -14,7 +13,6 @@ export function useCrudOperations(tableId) {
   const deleting = ref(false)
   const errors = ref({})
 
-  // Filters and pagination
   const currentPage = ref(1)
   const perPage = ref(15)
   const search = ref('')
@@ -22,7 +20,6 @@ export function useCrudOperations(tableId) {
   const sortDirection = ref('asc')
   const columnFilters = ref({})
 
-  // Computed
   const hasRecords = computed(() => records.value?.data?.length > 0)
   const hasSelection = computed(() => selectedRecords.value.length > 0)
   const totalRecords = computed(() => records.value?.total || 0)
@@ -90,7 +87,7 @@ export function useCrudOperations(tableId) {
       const response = await api.post(`/api/tables/${tableId}/records`, data)
 
       toast.success('Registro creado exitosamente')
-      await loadRecords() // Reload to show new record
+      await loadRecords() 
 
       return { success: true, record: response.data.record }
 
@@ -110,7 +107,7 @@ export function useCrudOperations(tableId) {
       const response = await api.put(`/api/tables/${tableId}/records/${recordId}`, data)
 
       toast.success('Registro actualizado exitosamente')
-      await loadRecords() // Reload to show updated record
+      await loadRecords() 
 
       return { success: true, record: response.data.record }
 
@@ -141,7 +138,6 @@ export function useCrudOperations(tableId) {
     }
   }
 
-  // Bulk delete
   const bulkDelete = async (recordIds = null) => {
     const idsToDelete = recordIds || selectedRecords.value
 
@@ -171,12 +167,10 @@ export function useCrudOperations(tableId) {
     }
   }
 
-  // Export records
   const exportRecords = async () => {
     try {
       const response = await api.post(`/api/tables/${tableId}/export`)
 
-      // TODO: Handle actual file download
       toast.success('Exportación iniciada')
       return { success: true, data: response.data }
 
@@ -186,7 +180,6 @@ export function useCrudOperations(tableId) {
     }
   }
 
-  // Selection methods
   const toggleRecordSelection = (recordId) => {
     const index = selectedRecords.value.indexOf(recordId)
     if (index > -1) {
@@ -206,7 +199,6 @@ export function useCrudOperations(tableId) {
     selectedRecords.value = []
   }
 
-  // Search and filter methods
   const setSearch = (searchTerm) => {
     search.value = searchTerm
     currentPage.value = 1 // Reset to first page

@@ -11,7 +11,6 @@ const app = createApp(App)
 const pinia = createPinia()
 app.use(pinia)
 
-// Configurar Toast
 app.use(Toast, {
   position: 'top-right',
   timeout: 3000,

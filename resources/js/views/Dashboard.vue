@@ -34,7 +34,7 @@
     </div>
 
     <!-- Recent Activity -->
-    <div class="bg-white rounded-lg shadow-md p-6">
+    <!-- <div class="bg-white rounded-lg shadow-md p-6">
       <h2 class="text-xl font-semibold text-gray-900 mb-4">
         Actividad Reciente
       </h2>
@@ -48,7 +48,7 @@
           <p class="text-sm">Comienza subiendo un archivo Excel o PDF</p>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -59,15 +59,14 @@ import { useAuth } from '@/composables/useAuth'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 import ActionCard from '@/components/dashboard/ActionCard.vue'
 import ActivityItem from '@/components/dashboard/ActivityItem.vue'
-
 const router = useRouter()
-const { user } = useAuth()
+const { user, checkAuth } = useAuth()
 
 const stats = ref({
-  tables: user.value?.tables.length || 0,
-  documents: user.value?.documents.length || 0,
-  records: 0,
-  storage: '0 MB'
+  tables: user.value?.tables_stats?.total_tables || 0,
+  documents: user.value?.documents_stats?.total_documents || 0,
+  records: user.value?.tables_stats?.total_records || 0,
+  storage: user.value?.storage_stats?.total_storage_used_formatted || '0 MB',
 })
 
 const recentActivity = ref([])
@@ -78,6 +77,7 @@ const navigateTo = (path) => {
 
 onMounted(() => {
   document.title = 'Dashboard - Gestión Documental'
+  checkAuth()
 })
 </script>
 

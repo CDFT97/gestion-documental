@@ -12,7 +12,6 @@ import {
   validateDateRange
 } from '@/utils/documentUtils'
 
-// Estado global del composable
 const loading = ref(false)
 const uploading = ref(false)
 const deleting = ref(false)
@@ -21,7 +20,6 @@ const documents = ref([])
 const currentDocument = ref(null)
 const categories = ref([])
 
-// Estado de paginación
 const pagination = reactive({
   current_page: 1,
   last_page: 1,
@@ -31,7 +29,6 @@ const pagination = reactive({
   to: 0
 })
 
-// Estado de filtros
 const filters = reactive({
   search: '',
   category: '',
@@ -50,12 +47,10 @@ export function useDocuments() {
   const isFirstPage = computed(() => pagination.current_page <= 1)
   const isLoading = computed(() => loading.value || uploading.value || deleting.value)
 
-  // Función para limpiar errores
   const clearErrors = () => {
     errors.value = {}
   }
 
-  // Función para manejar errores de validación
   const handleValidationErrors = (error) => {
     if (error.response?.status === 422) {
       errors.value = error.response.data.errors || {}
@@ -65,7 +60,6 @@ export function useDocuments() {
     }
   }
 
-  // Función para limpiar filtros
   const clearFilters = () => {
     Object.assign(filters, {
       search: '',
@@ -76,7 +70,6 @@ export function useDocuments() {
     })
   }
 
-  // Limpiar estado completo
   const clearState = () => {
     documents.value = []
     currentDocument.value = null
@@ -286,7 +279,7 @@ export function useDocuments() {
   const downloadDocument = async (id, filename) => {
     try {
       const response = await api.get(`/api/documents/${id}/preview/download`, {
-        responseType: 'blob' // Importante para archivos binarios
+        responseType: 'blob'
       })
 
       // Crear blob URL
@@ -337,7 +330,6 @@ export function useDocuments() {
     return await getDocuments(1)
   }
 
-  // Cambiar página
   const goToPage = async (page) => {
     if (page >= 1 && page <= pagination.last_page) {
       return await getDocuments(page)
@@ -345,7 +337,6 @@ export function useDocuments() {
     return { success: false, message: 'Página inválida' }
   }
 
-  // Página siguiente
   const nextPage = async () => {
     if (!isLastPage.value) {
       return await goToPage(pagination.current_page + 1)
@@ -353,7 +344,6 @@ export function useDocuments() {
     return { success: false, message: 'Ya está en la última página' }
   }
 
-  // Página anterior
   const previousPage = async () => {
     if (!isFirstPage.value) {
       return await goToPage(pagination.current_page - 1)
@@ -368,12 +358,10 @@ export function useDocuments() {
     return await getDocuments(1)
   }
 
-  // Refrescar lista actual
   const refreshDocuments = async () => {
     return await getDocuments(pagination.current_page)
   }
 
-  // Validar archivo (función helper expuesta)
   const validateDocumentFile = (file) => {
     const validation = validateFile(file)
     if (!validation.isValid) {
