@@ -47,4 +47,9 @@ class User extends Authenticatable
     {
         $this->notify(new ResetPasswordApiNotification($token, $this->email));
     }
+
+    public function tables()
+    {
+        return $this->hasMany(DynamicTable::class);
+    }
 }

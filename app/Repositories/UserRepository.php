@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 
 class UserRepository extends BaseRepository
 {
@@ -28,5 +29,32 @@ class UserRepository extends BaseRepository
     }
 
     return $user;
+  }
+
+  public function updateProfile(User $user, array $data): User
+  {
+    $user->update([
+      'name' => $data['name'],
+      'email' => $data['email'],
+    ]);
+
+    return $user->fresh();
+  }
+
+  public function verifyCurrentPassword(User $user, string $currentPassword): bool
+  {
+    return Hash::check($currentPassword, $user->password);
+  }
+
+  public function updatePassword(User $user, string $newPassword): bool
+  {
+    return $user->update([
+      'password' => Hash::make($newPassword)
+    ]);
+  }
+
+  public function getUserTables(User $user): array
+  {
+    return $tablesCount = $user->tables()->count() ?? 0;
   }
 }
