@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Repositories\DynamicTableRepository;
 use App\Repositories\DynamicTableRecordRepository;
+use App\Services\TableExportService;
+use Dompdf\FrameDecorator\Table;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -12,13 +14,16 @@ class TableRecordController extends Controller
 {
     protected $tableRepository;
     protected $recordRepository;
+    protected $tableExportService;
 
     public function __construct(
         DynamicTableRepository $tableRepository,
-        DynamicTableRecordRepository $recordRepository
+        DynamicTableRecordRepository $recordRepository,
+        TableExportService $tableExportService
     ) {
         $this->tableRepository = $tableRepository;
         $this->recordRepository = $recordRepository;
+        $this->tableExportService = $tableExportService;
     }
 
     public function index(Request $request, $tableId)
@@ -244,7 +249,7 @@ class TableRecordController extends Controller
         }
     }
 
-    public function export($tableId)
+    public function export(Request $request, $tableId)
     {
         $table = $this->tableRepository->findByUserAndId(auth()->id(), $tableId);
 
@@ -252,19 +257,30 @@ class TableRecordController extends Controller
             return response()->json(['message' => 'Tabla no encontrada'], 404);
         }
 
-        try {
-            // TODO: Implementar exportación con Maatwebsite\Excel
-            // Por ahora retornamos los datos para que el frontend los procese
-            $records = $this->recordRepository->getForExport($tableId);
+        $validator = Validator::make($request->all(), [
+            'format' => 'in:xlsx,csv'
+        ]);
 
+        if ($validator->fails()) {
             return response()->json([
-                'table' => $table,
-                'records' => $records,
-                'export_url' => route('tables.export', $tableId) // Para descarga directa
-            ]);
+                'message' => 'Formato no válido',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $format = $request->get('format', 'xlsx');
+
+        try {
+            $exportResult = $this->tableExportService->exportTable($table, $format);
+
+            return response()->download(
+                $exportResult['path'],
+                $exportResult['filename'],
+                $exportResult['headers']
+            )->deleteFileAfterSend(true);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Error al exportar los datos',
+                'message' => 'Error al exportar la tabla',
                 'error' => $e->getMessage()
             ], 500);
         }

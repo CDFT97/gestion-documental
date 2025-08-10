@@ -9,9 +9,11 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class DynamicTableRecordRepository extends BaseRepository
 {
+  protected $model;
   public function __construct(DynamicTableRecord $record)
   {
     parent::__construct($record);
+    $this->model = $record;
   }
 
   public function getByTablePaginated(
@@ -98,16 +100,11 @@ class DynamicTableRecordRepository extends BaseRepository
     return $this->model->where('dynamic_table_id', $tableId)->count();
   }
 
-  public function getForExport(int $tableId, array $columns = []): Collection
+  public function getForExport($tableId)
   {
-    $query = $this->model->where('dynamic_table_id', $tableId)
-      ->orderBy('row_number');
-
-    if (!empty($columns)) {
-      // Si se especifican columnas, podríamos filtrar aquí
-      // Por ahora retornamos todos los datos
-    }
-
-    return $query->get();
+    return $this->model
+      ->where('dynamic_table_id', $tableId)
+      ->orderBy('row_number')
+      ->get();
   }
 }
