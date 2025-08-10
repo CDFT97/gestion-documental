@@ -55,7 +55,6 @@ class TableExportService
 
     return $this->saveSpreadsheet($spreadsheet, $table, 'csv', $writer);
   }
-
   /**
    * Crear spreadsheet con datos comunes para Excel y CSV
    */
@@ -79,7 +78,6 @@ class TableExportService
 
     return $spreadsheet;
   }
-
   /**
    * Extraer headers de las columnas de la tabla
    */
@@ -91,7 +89,6 @@ class TableExportService
     }
     return $headers;
   }
-
   /**
    * Escribir filas de datos en el worksheet
    */
@@ -105,7 +102,6 @@ class TableExportService
       $row++;
     }
   }
-
   /**
    * Formatear datos de un registro según las columnas de la tabla
    */
@@ -118,7 +114,6 @@ class TableExportService
     }
     return $rowData;
   }
-
   /**
    * Guardar spreadsheet y retornar información para descarga
    */
@@ -135,7 +130,6 @@ class TableExportService
       'headers' => $this->getResponseHeaders($format, $filename)
     ];
   }
-
   /**
    * Asegurar que existe el directorio temporal y retornar path completo
    */
@@ -188,7 +182,6 @@ class TableExportService
       ]
     ]);
   }
-
   /**
    * Auto-ajustar tamaño de columnas (solo para Excel)
    */
@@ -198,7 +191,6 @@ class TableExportService
       $worksheet->getColumnDimension($col)->setAutoSize(true);
     }
   }
-
   /**
    * Formatear valor de celda según su tipo
    */
@@ -221,7 +213,6 @@ class TableExportService
         return $value;
     }
   }
-
   /**
    * Formatear valor booleano
    */
@@ -233,7 +224,6 @@ class TableExportService
       return 'No';
     }
   }
-
   /**
    * Formatear valor de fecha
    */
@@ -245,7 +235,6 @@ class TableExportService
       return $value;
     }
   }
-
   /**
    * Formatear valor decimal
    */
@@ -253,7 +242,6 @@ class TableExportService
   {
     return is_numeric($value) ? number_format($value, 2, ',', '.') : $value;
   }
-
   /**
    * Formatear valor entero
    */
@@ -261,7 +249,6 @@ class TableExportService
   {
     return is_numeric($value) ? number_format($value, 0, ',', '.') : $value;
   }
-
   /**
    * Generar nombre de archivo con timestamp
    */
