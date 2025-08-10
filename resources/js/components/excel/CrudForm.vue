@@ -105,7 +105,7 @@
           </button>
 
           <button type="submit" class="btn-primary" :disabled="creating || updating || !isFormValid">
-            <LoadingSpinner v-if="creating || updating || true" class="mr-2" size="sm" />
+            <LoadingSpinner v-if="creating || updating" class="mr-2" size="sm" />
             {{ isEditing ? 'Actualizar' : 'Crear' }}
           </button>
         </div>
