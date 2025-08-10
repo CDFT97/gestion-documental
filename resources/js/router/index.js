@@ -6,6 +6,8 @@ const Register = () => import('../views/auth/Register.vue')
 const ForgotPassword = () => import('../views/auth/ForgotPassword.vue')
 const ResetPassword = () => import('../views/auth/ResetPassword.vue')
 const Dashboard = () => import('../views/Dashboard.vue')
+const TableView = () => import('../views/excel/TableView.vue')
+const Tables = () => import('../views/excel/Index.vue')
 
 // Futuras vistas (las crearemos más adelante)
 // const Tables = () => import('../views/Tables.vue')
@@ -70,16 +72,26 @@ const routes = [
       layout: 'auth'
     }
   },
-  // {
-  //   path: '/tables',
-  //   name: 'Tables',
-  //   component: Tables,
-  //   meta: {
-  //     requiresAuth: true,
-  //     title: 'Gestión de Tablas',
-  //     breadcrumb: 'Tablas'
-  //   }
-  // },
+  {
+    path: '/tables',
+    name: 'Tables',
+    component: Tables,
+    meta: {
+      requiresAuth: true,
+      title: 'Gestión de Tablas',
+      breadcrumb: 'Tablas'
+    }
+  },
+  {
+    path: '/tables/:id',
+    name: 'TableView',
+    component: TableView,
+    meta: {
+      requiresAuth: true,
+      title: 'Gestión de Tablas',
+      breadcrumb: 'Tablas'
+    }
+  },
   // {
   //   path: '/tables/:id',
   //   name: 'TableDetail',

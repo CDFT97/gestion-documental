@@ -1,24 +1,10 @@
 <template>
   <div class="flex items-center justify-center" :class="containerClass">
-    <svg 
-      :class="spinnerClass"
-      :style="{ width: size, height: size }"
-      fill="none" 
-      viewBox="0 0 24 24"
-    >
-      <circle 
-        class="opacity-25" 
-        cx="12" 
-        cy="12" 
-        r="10" 
-        stroke="currentColor" 
-        stroke-width="4"
-      ></circle>
-      <path 
-        class="opacity-75" 
-        fill="currentColor" 
-        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-      ></path>
+    <svg :class="spinnerClass" :style="customSize ? { width: size, height: size } : {}" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+      </path>
     </svg>
     <span v-if="text" :class="textClass">{{ text }}</span>
   </div>
@@ -30,7 +16,11 @@ import { computed } from 'vue'
 const props = defineProps({
   size: {
     type: String,
-    default: '20px'
+    default: 'md',
+    validator: (value) => {
+      const predefinedSizes = ['xs', 'sm', 'md', 'lg', 'xl']
+      return predefinedSizes.includes(value) || value.includes('px')
+    }
   },
   color: {
     type: String,
@@ -46,12 +36,26 @@ const props = defineProps({
   }
 })
 
+// Determinar si es un tamaño custom (con px) o predefinido
+const customSize = computed(() => props.size.includes('px'))
+
+// Tamaños predefinidos
+const predefinedSizes = {
+  xs: 'h-3 w-3',
+  sm: 'h-4 w-4',
+  md: 'h-5 w-5',
+  lg: 'h-6 w-6',
+  xl: 'h-8 w-8' 
+}
+
 const spinnerClass = computed(() => [
   'animate-spin',
-  props.color
+  props.color,
+  // Solo aplicar clase de tamaño si no es custom
+  !customSize.value ? predefinedSizes[props.size] : ''
 ])
 
-const containerClass = computed(() => 
+const containerClass = computed(() =>
   props.fullscreen ? 'fixed inset-0 bg-black bg-opacity-50 z-50' : ''
 )
 
