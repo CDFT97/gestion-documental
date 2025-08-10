@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\{DocumentUploadRequest,DocumentIndexRequest, DocumentUpdateRequest};
+use App\Http\Requests\{DocumentUploadRequest, DocumentIndexRequest, DocumentUpdateRequest};
 use App\Repositories\DocumentRepository;
 use App\Services\DocumentService;
+use Laravel\Sanctum\PersonalAccessToken;
+use Illuminate\Http\Request;
 
 class DocumentController extends Controller
 {
@@ -97,16 +99,67 @@ class DocumentController extends Controller
     /**
      * Obtener vista previa del documento PDF
      */
-    public function preview($id)
+    public function preview($id, Request $request)
+    {
+        try {
+
+            // Si no hay usuario autenticado, intentar con token de URL
+            if (!auth()->check() && $request->has('token')) {
+                $token = $request->get('token');
+
+                // Buscar el token en la base de datos
+                $personalAccessToken = \Laravel\Sanctum\PersonalAccessToken::findToken($token);
+
+                if ($personalAccessToken) {
+                    // Verificar que el token no haya expirado
+                    if (!$personalAccessToken->expires_at || $personalAccessToken->expires_at->isFuture()) {
+                        auth()->setUser($personalAccessToken->tokenable);
+                    } else {
+                        \Log::info('Token expired');
+                    }
+                }
+            }
+
+            // Verificar que el usuario esté autenticado
+            if (!auth()->check()) {
+                \Log::info('Final auth check failed');
+                return response()->json(['message' => 'No autorizado'], 401);
+            }
+
+            $result = $this->documentService->getDocumentContent($id, auth()->id());
+
+            return response($result['content'])
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'inline; filename="document.pdf"')
+                ->header('Access-Control-Allow-Origin', '*')
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
+        } catch (\Exception $e) {
+            \Log::error('Preview error: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Error al obtener la vista previa',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function download($id, Request $request)
     {
         try {
             $result = $this->documentService->getDocumentContent($id, auth()->id());
 
             return response($result['content'])
-                ->withHeaders($result['headers']);
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'inline; filename="document.pdf"')
+                ->header('Access-Control-Allow-Origin', '*')
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
         } catch (\Exception $e) {
+            \Log::error('Preview error: ' . $e->getMessage());
             return response()->json([
-                'message' => 'Error al obtener la vista previa',
+                'message' => 'Error al obtener el documento',
                 'error' => $e->getMessage()
             ], 500);
         }

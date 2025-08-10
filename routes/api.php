@@ -23,6 +23,7 @@ Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/auth/reset-password', [AuthController::class, 'resetPassword']);
+Route::get('/documents/{id}/preview', [DocumentController::class, 'preview']);
 
 // Rutas protegidas
 Route::middleware('auth:sanctum')->group(function () {
@@ -65,7 +66,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('upload', [DocumentController::class, 'upload']);
         Route::get('categories', [DocumentController::class, 'categories']);
         Route::get('stats', [DocumentController::class, 'stats']);
-        Route::get('{id}/preview', [DocumentController::class, 'preview']);
         Route::apiResource('', DocumentController::class)->parameters(['' => 'id']);
+        Route::get('/{id}/preview/download', [DocumentController::class, 'download']);
     });
 });
