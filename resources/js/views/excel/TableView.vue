@@ -49,7 +49,7 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div v-if="tableLoading" class="flex items-center justify-center py-12">
-        <LoadingSpinner />
+        <LoadingSpinner size="lg" color="text-primary-600" />
         <span class="ml-3 text-gray-600">Cargando tabla...</span>
       </div>
 

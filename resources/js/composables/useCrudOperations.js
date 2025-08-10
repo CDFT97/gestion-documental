@@ -129,7 +129,7 @@ export function useCrudOperations(tableId) {
       await api.delete(`/api/tables/${tableId}/records/${recordId}`)
 
       toast.success('Registro eliminado exitosamente')
-      await loadRecords() 
+      await loadRecords()
 
       return { success: true }
 
@@ -234,6 +234,11 @@ export function useCrudOperations(tableId) {
     currentPage.value = 1 // Reset to first page
   }
 
+  const setPerPage = (newPerPage) => {
+    perPage.value = parseInt(newPerPage)
+    currentPage.value = 1 // Reset to first page when changing per page
+  }
+
   return {
     // State
     records,
@@ -275,6 +280,7 @@ export function useCrudOperations(tableId) {
     setColumnFilter,
     clearFilters,
     setSorting,
+    setPerPage,
     clearErrors
   }
 }

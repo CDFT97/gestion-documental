@@ -24,7 +24,12 @@
           </button>
 
           <button type="button" @click="handleConfirm" :disabled="loading" :class="confirmButtonClass">
-            <LoadingSpinner v-if="loading" size="16px" color="text-white" class="mr-2" />
+           <LoadingSpinner 
+              v-if="loading" 
+              size="sm" 
+              color="text-white" 
+              class="mr-2" 
+            />
             {{ confirmText }}
           </button>
         </div>

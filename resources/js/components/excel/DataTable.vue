@@ -18,6 +18,20 @@
             <MagnifyingGlassIcon class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
           </div>
 
+          <!--Per Page -->
+          <div class="flex items-center space-x-2">
+            <label for="perPage" class="text-sm text-gray-700 whitespace-nowrap">Por página:</label>
+            <select id="perPage" v-model="perPageValue" @change="handlePerPageChange"
+              class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+              <option value="200">200</option>
+            </select>
+          </div>
+
           <button @click="showCreateForm = true" class="btn-primary flex items-center">
             <PlusIcon class="h-4 w-4 mr-2" />
             Agregar
@@ -60,7 +74,7 @@
     </div>
 
     <div v-if="loading" class="p-8 text-center">
-      <LoadingSpinner />
+      <LoadingSpinner size="lg" color="text-primary-600" />
       <p class="text-gray-600 mt-2">Cargando registros...</p>
     </div>
 
@@ -146,7 +160,12 @@
     </div>
 
     <div v-if="records?.links && records.last_page > 1" class="bg-gray-50 px-6 py-3 border-t border-gray-200">
-      <Pagination :links="records" @page-change="handlePageChange" />
+      <div class="flex items-center justify-between">
+        <div class="text-sm text-gray-700">
+          Mostrando {{ records.from || 0 }} a {{ records.to || 0 }} de {{ totalRecords }} registros
+        </div>
+        <Pagination :links="records" @page-change="handlePageChange" />
+      </div>
     </div>
 
     <CrudForm v-if="showCreateForm || showEditForm" :table="table" :record="recordToEdit" :creating="creating"
@@ -212,6 +231,7 @@ const {
   setColumnFilter,
   clearFilters,
   setSorting,
+  setPerPage,
   clearErrors
 } = useCrudOperations(props.table.id)
 
@@ -222,6 +242,7 @@ const recordToEdit = ref(null)
 const showDeleteModal = ref(false)
 const recordToDelete = ref(null)
 const searchTimeout = ref(null)
+const perPageValue = ref(perPage.value || 15)
 
 const hasColumnFilters = computed(() => {
   return props.table.columns?.length > 0
@@ -275,6 +296,11 @@ const handlePageChange = (url) => {
   const urlObj = new URL(url)
   const page = urlObj.searchParams.get('page')
   loadRecords({ page: parseInt(page) })
+}
+
+const handlePerPageChange = () => {
+  setPerPage(perPageValue.value)
+  loadRecords({ page: 1 }) // Resetear a la primera página cuando cambie perPage
 }
 
 const toggleSelectAll = () => {
@@ -380,8 +406,12 @@ const getCellClass = (value, type) => {
       return baseClass
   }
 }
+watch(() => perPage.value, (newValue) => {
+  perPageValue.value = newValue
+})
 
 onMounted(() => {
+  perPageValue.value = perPage.value || 25
   loadRecords()
 })
 
@@ -389,23 +419,3 @@ watch(() => props.table.id, () => {
   loadRecords()
 })
 </script>
-
-<style scoped>
-.btn-primary {
-  @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
-}
-
-.btn-secondary {
-  @apply bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
-}
-
-.btn-danger {
-  @apply bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
-}
-
-.btn-primary:disabled,
-.btn-secondary:disabled,
-.btn-danger:disabled {
-  @apply opacity-50 cursor-not-allowed;
-}
-</style>

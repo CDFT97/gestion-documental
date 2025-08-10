@@ -18,24 +18,30 @@
               <span v-if="isRequired(column)" class="text-red-500">*</span>
             </label>
 
+            <!-- Text Input -->
             <input v-if="column.type === 'string'" :id="column.name" v-model="formData[column.name]" type="text"
               :class="getInputClass(column.name)" :placeholder="`Ingresa ${column.original_name.toLowerCase()}`"
               :required="isRequired(column)" />
 
+            <!-- Number Input -->
             <input v-else-if="column.type === 'number'" :id="column.name" v-model.number="formData[column.name]"
               type="number" step="any" :class="getInputClass(column.name)"
               :placeholder="`Ingresa ${column.original_name.toLowerCase()}`" :required="isRequired(column)" />
 
+            <!-- Email Input -->
             <input v-else-if="column.type === 'email'" :id="column.name" v-model="formData[column.name]" type="email"
               :class="getInputClass(column.name)" :placeholder="`Ingresa ${column.original_name.toLowerCase()}`"
               :required="isRequired(column)" />
 
+            <!-- Date Input -->
             <input v-else-if="column.type === 'date'" :id="column.name" v-model="formData[column.name]" type="date"
               :class="getInputClass(column.name)" :required="isRequired(column)" />
 
+            <!-- DateTime Input -->
             <input v-else-if="column.type === 'datetime'" :id="column.name" v-model="formData[column.name]"
               type="datetime-local" :class="getInputClass(column.name)" :required="isRequired(column)" />
 
+            <!-- Boolean Input -->
             <div v-else-if="column.type === 'boolean'" class="flex items-center space-x-3">
               <label class="flex items-center">
                 <input :id="`${column.name}_true`" v-model="formData[column.name]" type="radio" :value="true"
@@ -49,26 +55,31 @@
               </label>
             </div>
 
+            <!-- Textarea for long text -->
             <textarea v-else-if="column.type === 'text'" :id="column.name" v-model="formData[column.name]" rows="3"
               :class="getInputClass(column.name)" :placeholder="`Ingresa ${column.original_name.toLowerCase()}`"
               :required="isRequired(column)"></textarea>
 
+            <!-- Default text input -->
             <input v-else :id="column.name" v-model="formData[column.name]" type="text"
               :class="getInputClass(column.name)" :placeholder="`Ingresa ${column.original_name.toLowerCase()}`"
               :required="isRequired(column)" />
 
+            <!-- Field Error -->
             <div v-if="errors[column.name]" class="mt-1">
               <p v-for="error in errors[column.name]" :key="error" class="text-sm text-red-600">
                 {{ error }}
               </p>
             </div>
 
+            <!-- Field Help Text -->
             <p v-if="getHelpText(column)" class="mt-1 text-xs text-gray-500">
               {{ getHelpText(column) }}
             </p>
           </div>
         </div>
 
+        <!-- General Errors -->
         <div v-if="errors.general" class="bg-red-50 border border-red-200 rounded-md p-3">
           <div class="flex">
             <ExclamationTriangleIcon class="h-5 w-5 text-red-400" />
@@ -87,13 +98,14 @@
           </div>
         </div>
 
+        <!-- Actions -->
         <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
           <button type="button" @click="handleCancel" class="btn-secondary" :disabled="creating || updating">
             Cancelar
           </button>
 
           <button type="submit" class="btn-primary" :disabled="creating || updating || !isFormValid">
-            <LoadingSpinner v-if="creating || updating" class="mr-2" size="sm" />
+            <LoadingSpinner v-if="creating || updating || true" class="mr-2" size="sm" />
             {{ isEditing ? 'Actualizar' : 'Crear' }}
           </button>
         </div>
@@ -150,7 +162,26 @@ const initializeForm = () => {
   props.table.columns.forEach(column => {
     if (props.record) {
       // Editing - populate with existing data
-      data[column.name] = props.record.data[column.name]
+      let value = props.record.data[column.name]
+
+      // Convert boolean values properly
+      if (column.type === 'boolean') {
+        // Handle different boolean representations from backend
+        if (value === 1 || value === '1' || value === 'true' || value === true) {
+          value = true
+        } else if (value === 0 || value === '0' || value === 'false' || value === false) {
+          value = false
+        } else {
+          value = false // Default fallback
+        }
+      }
+
+      // Handle number types
+      if ((column.type === 'number' || column.type === 'integer' || column.type === 'decimal') && value !== null) {
+        value = Number(value)
+      }
+
+      data[column.name] = value
     } else {
       // Creating - set default values
       data[column.name] = getDefaultValue(column)
@@ -160,12 +191,13 @@ const initializeForm = () => {
   formData.value = data
 }
 
-// Get default value for column type
 const getDefaultValue = (column) => {
   switch (column.type) {
     case 'boolean':
       return false
     case 'number':
+    case 'integer':
+    case 'decimal':
       return null
     case 'date':
     case 'datetime':
@@ -215,6 +247,7 @@ const getHelpText = (column) => {
 
 // Handle form submission
 const handleSubmit = () => {
+  // Transform data before sending
   const submitData = { ...formData.value }
 
   // Convert empty strings to null for certain types
@@ -245,18 +278,6 @@ watch(() => [props.record, props.table], () => {
 </script>
 
 <style scoped>
-.btn-primary {
-  @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
-}
-
-.btn-secondary {
-  @apply bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
-}
-
-.btn-primary:disabled,
-.btn-secondary:disabled {
-  @apply opacity-50 cursor-not-allowed;
-}
 
 /* Modal backdrop animation */
 .modal-backdrop {
