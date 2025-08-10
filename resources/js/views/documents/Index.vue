@@ -22,7 +22,8 @@
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
           <!-- Buscador -->
           <div class="relative">
-            <input v-model="searchQuery" @input="handleSearch" type="text" placeholder="Buscar documentos..."
+            <input v-model="searchQuery" @input="handleSearch" type="text"
+              placeholder="Buscar documentos..."
               class="pl-10 pr-4 py-2 w-full sm:w-80 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
             <MagnifyingGlassIcon class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
           </div>
@@ -211,10 +212,13 @@ const handleSearch = () => {
   }
 
   searchTimeout.value = setTimeout(async () => {
-    if (searchQuery.value.trim()) {
-      await searchDocuments(searchQuery.value.trim())
+    const currentSearchValue = searchQuery.value.trim()
+    
+    if (currentSearchValue) {
+      await searchDocuments(currentSearchValue)
     } else {
-      await getDocuments()
+      // Si está vacío, usar searchDocuments con string vacío para limpiar el filtro
+      await searchDocuments('')
     }
   }, 500)
 }
@@ -224,7 +228,7 @@ const handleCategoryFilter = async () => {
   if (selectedCategory.value) {
     await filterByCategory(selectedCategory.value)
   } else {
-    await getDocuments()
+    await filterByCategory('')
   }
 }
 
@@ -233,7 +237,7 @@ const handleDateFilter = async () => {
   if (dateFrom.value || dateTo.value) {
     await filterByDateRange(dateFrom.value, dateTo.value)
   } else {
-    await getDocuments()
+   await filterByDateRange('', '')
   }
 }
 

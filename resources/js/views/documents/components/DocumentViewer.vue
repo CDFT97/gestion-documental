@@ -23,11 +23,19 @@
         </div>
 
         <div class="flex items-center space-x-2">
-          <!-- Toggle panel info -->
+          <!-- Toggle info panel -->
           <button @click="toggleInfoPanel" class="btn-secondary" title="Toggle información">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+
+          <!-- Open in new tab -->
+          <button @click="openInNewTab" class="btn-secondary" title="Abrir en nueva pestaña">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
           </button>
 
@@ -53,54 +61,16 @@
       <!-- Contenido principal -->
       <div class="flex-1 flex overflow-hidden">
         <!-- Panel principal del PDF -->
-        <div class="flex-1 bg-gray-100">
-          <!-- Loading state -->
-          <div v-if="loading" class="h-full flex items-center justify-center">
-            <div class="text-center">
-              <LoadingSpinner size="lg" color="text-primary-600" />
-              <p class="mt-2 text-gray-600">Cargando documento...</p>
-              <p class="text-xs text-gray-500 mt-1">{{ loadingProgress }}</p>
-            </div>
-          </div>
-
-          <!-- Error state -->
-          <div v-else-if="error" class="h-full flex items-center justify-center">
-            <div class="text-center max-w-md p-6">
-              <ExclamationTriangleIcon class="h-12 w-12 text-red-500 mx-auto mb-4" />
-              <h3 class="text-lg font-medium text-gray-900 mb-2">Error al cargar el documento</h3>
-              <p class="text-gray-600 mb-4">{{ error }}</p>
-
-              <div class="space-y-2">
-                <button @click="loadPdf" class="btn-primary">
-                  <ArrowPathIcon class="h-4 w-4 mr-2" />
-                  Reintentar
-                </button>
-
-                <button @click="openInNewTab" class="btn-secondary">
-                  <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                  Abrir en nueva pestaña
-                </button>
-              </div>
-
-              <!-- Debug info -->
-              <details class="mt-4 text-left">
-                <summary class="text-xs text-gray-500 cursor-pointer">Debug info</summary>
-                <pre class="text-xs bg-gray-100 p-2 rounded mt-2 text-left overflow-auto">{{ debugInfo }}</pre>
-              </details>
-            </div>
-          </div>
-
-          <!-- PDF Viewer -->
-          <div v-else class="h-full">
-            <VPdfViewer :src="pdfUrl" :style="{ width: '100%', height: '100%' }" @loading="handlePdfLoading"
-              @loaded="handlePdfLoaded" @error="handlePdfError" />
+        <div class="flex-1 bg-gray-100 p-4">
+          <div class="pdf-container h-full">
+            <iframe :src="pdfUrl" width="100%" height="100%" frameborder="0" class="rounded-lg shadow-md">
+              Tu navegador no soporta PDFs embebidos.
+              Por favor descarga el PDF para verlo: <a :href="pdfUrl" class="text-blue-600 underline">Descargar PDF</a>
+            </iframe>
           </div>
         </div>
 
-        <!-- Panel lateral de información (opcional y colapsable) -->
+        <!-- Panel lateral de información (colapsable) -->
         <div v-if="showInfoPanel" class="w-80 bg-white border-l border-gray-200 overflow-y-auto">
           <div class="p-4">
             <div class="flex items-center justify-between mb-4">
@@ -108,19 +78,6 @@
               <button @click="toggleInfoPanel" class="btn-icon" title="Ocultar panel">
                 <XMarkIcon class="h-4 w-4" />
               </button>
-            </div>
-
-            <!-- URL del PDF para debug -->
-            <div class="mb-4 p-3 bg-gray-50 rounded text-xs">
-              <p class="font-medium mb-1">URL del PDF:</p>
-              <a :href="pdfUrl" target="_blank" class="text-blue-600 hover:underline break-all">
-                {{ pdfUrl }}
-              </a>
-              <div class="mt-2">
-                <button @click="testPdfUrl" class="btn-secondary text-xs">
-                  Probar URL
-                </button>
-              </div>
             </div>
 
             <!-- Información básica -->
@@ -235,6 +192,16 @@
             </div>
           </div>
         </div>
+
+        <!-- Botón para mostrar panel lateral cuando está oculto -->
+        <button v-if="!showInfoPanel" @click="toggleInfoPanel"
+          class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white border border-gray-300 rounded-l-lg p-2 shadow-md hover:bg-gray-50 transition-colors"
+          title="Mostrar información">
+          <svg class="h-4 w-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </button>
       </div>
     </div>
 
@@ -257,13 +224,9 @@ import {
   PencilIcon,
   ArrowDownTrayIcon,
   XMarkIcon,
-  ExclamationTriangleIcon,
-  ArrowPathIcon,
   TrashIcon
 } from '@heroicons/vue/24/outline'
-import { VPdfViewer } from '@vue-pdf-viewer/viewer'
 import { useDocuments } from '@/composables/useDocuments'
-import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import DocumentEditModal from './DocumentEditModal.vue'
 import { formatFileSize } from '@/utils/documentUtils'
@@ -288,13 +251,9 @@ const emit = defineEmits(['close', 'updated', 'deleted'])
 const { getPreviewUrl, deleteDocument, downloadDocument, deleting } = useDocuments()
 
 // Estado
-const loading = ref(false)
-const error = ref(null)
 const showInfoPanel = ref(true)
 const showEditModal = ref(false)
 const showDeleteModal = ref(false)
-const loadingProgress = ref('')
-const debugInfo = ref({})
 
 // Computed
 const pdfUrl = computed(() => {
@@ -306,74 +265,19 @@ const pdfUrl = computed(() => {
 watch(() => props.show, (newShow) => {
   if (newShow) {
     document.body.style.overflow = 'hidden'
-    loadPdf()
   } else {
     document.body.style.overflow = ''
   }
 })
 
-watch(() => props.document, (newDoc) => {
-  if (newDoc) {
-    loadPdf()
-  }
-})
-
 // Métodos
-const loadPdf = () => {
-  loading.value = true
-  error.value = null
-  loadingProgress.value = 'Iniciando carga...'
-  debugInfo.value = {
-    documentId: props.document?.id,
-    url: pdfUrl.value,
-    timestamp: new Date().toISOString()
-  }
-
-  console.log('🔄 Loading PDF:', pdfUrl.value)
-}
-
-const handlePdfLoading = () => {
-  console.log('⏳ PDF is loading...')
-  loading.value = true
-  loadingProgress.value = 'Cargando PDF...'
-}
-
-const handlePdfLoaded = () => {
-  console.log('✅ PDF loaded successfully')
-  loading.value = false
-  error.value = null
-  loadingProgress.value = ''
-}
-
-const handlePdfError = (errorEvent) => {
-  console.error('❌ PDF loading failed:', errorEvent)
-  loading.value = false
-  error.value = 'Error al cargar el PDF. Verifique que el archivo no esté corrupto.'
-
-  debugInfo.value = {
-    ...debugInfo.value,
-    error: errorEvent,
-    errorType: typeof errorEvent,
-    errorMessage: errorEvent?.message || 'Unknown error'
-  }
-}
-
-const testPdfUrl = async () => {
-  console.log('🧪 Testing PDF URL:', pdfUrl.value)
-
+const copyUrl = async () => {
   try {
-    const response = await fetch(pdfUrl.value, { method: 'HEAD' })
-    console.log('📡 Response status:', response.status)
-    console.log('📋 Response headers:', Object.fromEntries(response.headers.entries()))
-
-    if (response.ok) {
-      alert('✅ URL responde correctamente')
-    } else {
-      alert(`❌ Error HTTP: ${response.status}`)
-    }
+    await navigator.clipboard.writeText(pdfUrl.value)
+    alert('✅ URL copiada al portapapeles')
   } catch (err) {
-    console.error('🚫 Fetch error:', err)
-    alert(`❌ Error de red: ${err.message}`)
+    console.error('Error copying to clipboard:', err)
+    prompt('Copia esta URL:', pdfUrl.value)
   }
 }
 
@@ -436,34 +340,14 @@ const handleDelete = async () => {
   }
 }
 
-// Keyboard shortcuts
-const handleKeydown = (event) => {
-  if (!props.show) return
-
-  switch (event.key) {
-    case 'Escape':
-      if (!showEditModal.value && !showDeleteModal.value) {
-        emit('close')
-      }
-      break
-    case 'F5':
-      event.preventDefault()
-      loadPdf()
-      break
-  }
-}
-
 // Lifecycle
 onMounted(() => {
-  document.addEventListener('keydown', handleKeydown)
   if (props.show) {
     document.body.style.overflow = 'hidden'
-    loadPdf()
   }
 })
 
 onUnmounted(() => {
-  document.removeEventListener('keydown', handleKeydown)
   document.body.style.overflow = ''
 })
 </script>
@@ -489,6 +373,13 @@ onUnmounted(() => {
 .btn-secondary:disabled,
 .btn-danger:disabled {
   @apply opacity-50 cursor-not-allowed;
+}
+
+.pdf-container {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
 }
 
 /* Modal animations */
