@@ -13,7 +13,7 @@ const apiClient = axios.create({
   withCredentials: true
 })
 
-// Interceptor para requests - agregar token automáticamente
+// Interceptor for requests - automatically add token
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token')
@@ -27,7 +27,7 @@ apiClient.interceptors.request.use(
   }
 )
 
-// Interceptor para responses - manejar errores globalmente
+// invalid or expired token
 apiClient.interceptors.response.use(
   (response) => {
     return response
@@ -40,14 +40,12 @@ apiClient.interceptors.response.use(
 
       switch (status) {
         case 401:
-          // Token inválido o expirado
           localStorage.removeItem('token')
           delete apiClient.defaults.headers.common['Authorization']
 
-          // Solo mostrar toast si no estamos en login/register
+          // Only show toast if we are not in login/register
           if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
             toast.error('Sesión expirada. Por favor, inicia sesión nuevamente.')
-            // Redireccionar al login después de un delay
             setTimeout(() => {
               window.location.href = '/login'
             }, 1500)
@@ -77,10 +75,10 @@ apiClient.interceptors.response.use(
           toast.error(data?.message || 'Ha ocurrido un error inesperado.')
       }
     } else if (error.request) {
-      // Error de red
+      // Red error
       toast.error('Error de conexión. Verifica tu conexión a internet.')
     } else {
-      // Otros errores
+      // Other errors
       toast.error('Ha ocurrido un error inesperado.')
     }
 

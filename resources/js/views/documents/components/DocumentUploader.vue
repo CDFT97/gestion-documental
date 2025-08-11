@@ -148,32 +148,26 @@ import {
 import { useDocuments } from '@/composables/useDocuments'
 import { getFileNameWithoutExtension } from '@/utils/documentUtils'
 
-// Emits
 const emit = defineEmits(['upload-success'])
 
-// Composable
 const { uploadDocument, uploading, errors, clearErrors, validateDocumentFile, formatFileSize } = useDocuments()
 
-// Estado local
 const fileInput = ref(null)
 const selectedFile = ref(null)
 const isDragOver = ref(false)
 const uploadProgress = ref(0)
 const uploadSuccess = ref(false)
 
-// Metadatos del documento
 const metadata = ref({
   name: '',
   category: '',
   description: ''
 })
 
-// Computed
 const defaultName = computed(() => {
   return selectedFile.value ? getFileNameWithoutExtension(selectedFile.value.name) : ''
 })
 
-// Watchers
 watch(uploading, (isUploading) => {
   if (isUploading) {
     uploadProgress.value = 0
@@ -182,7 +176,6 @@ watch(uploading, (isUploading) => {
   }
 })
 
-// Métodos
 const triggerFileInput = () => {
   if (!uploading.value) {
     fileInput.value?.click()
@@ -210,7 +203,6 @@ const handleFile = (file) => {
   clearErrors()
   uploadSuccess.value = false
 
-  // Validar archivo
   const validation = validateDocumentFile(file)
   if (!validation.isValid) {
     return
@@ -218,7 +210,6 @@ const handleFile = (file) => {
 
   selectedFile.value = file
 
-  // Auto-rellenar nombre si está vacío
   if (!metadata.value.name) {
     metadata.value.name = defaultName.value
   }
@@ -235,7 +226,6 @@ const clearFile = () => {
   uploadSuccess.value = false
   uploadProgress.value = 0
 
-  // Limpiar input
   if (fileInput.value) {
     fileInput.value.value = ''
   }
@@ -254,7 +244,6 @@ const uploadFile = async () => {
       uploadSuccess.value = true
       emit('upload-success', result.document)
 
-      // Limpiar formulario después de 2 segundos
       setTimeout(() => {
         clearFile()
         uploadSuccess.value = false

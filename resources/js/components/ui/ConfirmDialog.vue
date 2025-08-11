@@ -147,19 +147,16 @@ const handleCancel = () => {
   }
 }
 
-// Close on escape key
 const handleKeydown = (event) => {
   if (event.key === 'Escape' && !props.loading) {
     handleCancel()
   }
 }
 
-// Add event listener for escape key
 import { onMounted, onUnmounted } from 'vue'
 
 onMounted(() => {
   document.addEventListener('keydown', handleKeydown)
-  // Focus the confirm button for better accessibility
   document.querySelector('[data-confirm-button]')?.focus()
 })
 

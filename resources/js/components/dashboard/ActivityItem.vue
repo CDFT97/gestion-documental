@@ -41,21 +41,6 @@ const props = defineProps({
   activity: {
     type: Object,
     required: true
-    // formato:
-    // {
-    //   id: 1,
-    //   type: 'excel_upload',
-    //   title: 'Archivo Excel cargado',
-    //   description: 'ventas_2024.xlsx subido exitosamente',
-    //   icon: '📊',
-    //   timestamp: '2024-01-09T10:30:00Z',
-    //   actionable: true,
-    //   metadata: {
-    //     fileSize: '2.1 MB',
-    //     recordCount: 1250,
-    //     status: 'Completado'
-    //   }
-    // }
   }
 })
 

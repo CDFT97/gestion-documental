@@ -48,7 +48,6 @@ const props = defineProps({
   trend: {
     type: Object,
     default: null
-    // formato: { direction: 'up', percentage: 12 }
   }
 })
 

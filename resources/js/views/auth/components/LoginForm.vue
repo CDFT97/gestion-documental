@@ -149,7 +149,6 @@ const fillDemoCredentials = () => {
   form.value.password = 'password123'
 }
 
-// Keyboard shortcuts
 const handleKeydown = (event) => {
   if (event.ctrlKey && event.key === 'd') {
     event.preventDefault()
@@ -165,7 +164,6 @@ onMounted(() => {
 
   clearErrors()
 
-  // Keyboard shortcuts
   document.addEventListener('keydown', handleKeydown)
 })
 

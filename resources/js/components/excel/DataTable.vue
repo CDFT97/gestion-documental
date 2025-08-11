@@ -300,7 +300,7 @@ const handlePageChange = (url) => {
 
 const handlePerPageChange = () => {
   setPerPage(perPageValue.value)
-  loadRecords({ page: 1 }) // Resetear a la primera página cuando cambie perPage
+  loadRecords({ page: 1 }) //  Reset to the first page when perPage changes
 }
 
 const toggleSelectAll = () => {
@@ -328,10 +328,8 @@ const handleFormSubmit = async (data) => {
   let result
 
   if (recordToEdit.value) {
-    // Update existing record
     result = await updateRecord(recordToEdit.value.id, data)
   } else {
-    // Create new record
     result = await createRecord(data)
   }
 

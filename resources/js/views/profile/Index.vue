@@ -88,7 +88,6 @@ import { formatDate } from '../../utils/formatters'
 
 const authStore = useAuthStore()
 
-// Computed
 const user = computed(() => authStore.user)
 const userInitials = computed(() => {
   if (!user.value?.name) return 'U'

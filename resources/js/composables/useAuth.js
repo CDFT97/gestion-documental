@@ -10,15 +10,12 @@ const errors = ref({})
 export function useAuth() {
   const toast = useToast()
 
-  // Computed properties
   const isAuthenticated = computed(() => !!user.value)
 
-  // Limpiar errores
   const clearErrors = () => {
     errors.value = {}
   }
 
-  // Manejar errores de validación
   const handleValidationErrors = (error) => {
     if (error.response?.status === 422) {
       errors.value = error.response.data.errors || {}
@@ -51,11 +48,9 @@ export function useAuth() {
     try {
       const response = await api.post('/api/auth/login', credentials)
 
-      // Guardar token y usuario
       token.value = response.data.token
       user.value = response.data.user
 
-      // Configurar token en axios
       setAuthToken(token.value)
 
       toast.success(response.data.message || 'Login exitoso')
@@ -79,7 +74,6 @@ export function useAuth() {
       token.value = response.data.token
       user.value = response.data.user
 
-      // Configurar token en axios
       setAuthToken(token.value)
 
       toast.success(response.data.message || 'Registro exitoso')
@@ -93,7 +87,6 @@ export function useAuth() {
     }
   }
 
-  // Logout
   const logout = async () => {
     loading.value = true
 
@@ -105,7 +98,6 @@ export function useAuth() {
     } catch (error) {
       console.log('Error en logout:', error)
     } finally {
-      // Limpiar estado local
       user.value = null
       token.value = null
       setAuthToken(null)

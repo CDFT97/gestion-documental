@@ -14,7 +14,6 @@ export default {
   ConfirmDialog
 }
 
-// Plugin installation function for global registration
 export const UIComponentsPlugin = {
   install(app) {
     app.component('LoadingSpinner', LoadingSpinner)

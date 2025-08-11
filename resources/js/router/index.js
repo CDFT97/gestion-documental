@@ -11,7 +11,6 @@ const Tables = () => import('../views/excel/Index.vue')
 const Profile = () => import('../views/profile/Index.vue')
 const Documents = () => import('../views/documents/Index.vue')
 
-// Definir rutas
 const routes = [
   {
     path: '/',
@@ -133,34 +132,28 @@ let isNavigating = false
 
 
 router.beforeEach(async (to, from, next) => {
-  // Mostrar loading durante navegación
   isNavigating = true
 
   const { user, checkAuth } = useAuth()
 
-  // Verificar autenticación solo si no tenemos usuario cargado
   if (!user.value) {
     await checkAuth()
   }
 
-  // Rutas que requieren autenticación
   if (to.meta.requiresAuth && !user.value) {
     next({
       name: 'Login',
-      query: { redirect: to.fullPath } // Guardar la ruta destino
+      query: { redirect: to.fullPath }
     })
     return
   }
 
-  // Rutas solo para invitados (login, register)
   if (to.meta.requiresGuest && user.value) {
-    // Si viene de un redirect, ir allí; sino al dashboard
     const redirectTo = to.query.redirect || '/dashboard'
     next(redirectTo)
     return
   }
 
-  // Actualizar título de página
   if (to.meta.title) {
     document.title = `${to.meta.title} - Gestión Documental`
   }
@@ -169,17 +162,16 @@ router.beforeEach(async (to, from, next) => {
 })
 
 router.beforeResolve((to, from, next) => {
-  // Este hook se ejecuta después de que todos los guards han sido resueltos
-  // Útil para lógica adicional antes de la navegación
+  // This hook is executed after all guards have been resolved.
+  // Useful for additional logic before navigation
   next()
 })
 
 router.afterEach((to, from) => {
-  // Ocultar loading después de navegación
   isNavigating = false
 })
 
-// Función helper para verificar si estamos navegando
+// Helper function to check if we are browsing
 export const useRouter = () => {
   return {
     router,
@@ -187,11 +179,11 @@ export const useRouter = () => {
   }
 }
 
-// Función helper para navegación programática con validación
+// Helper function for programmatic navigation with validation
 export const navigateTo = (name, params = {}, query = {}) => {
   const { user } = useAuth()
 
-  // Verificar si la ruta requiere auth
+  // Check if the route requires authentication
   const route = routes.find(r => r.name === name)
   if (route?.meta?.requiresAuth && !user.value) {
     router.push({ name: 'Login', query: { redirect: router.resolve({ name, params, query }).href } })
@@ -201,7 +193,7 @@ export const navigateTo = (name, params = {}, query = {}) => {
   router.push({ name, params, query })
 }
 
-// Función helper para el breadcrumb
+// Helper function for breadcrumbs
 export const useBreadcrumb = () => {
   const { currentRoute } = router
 

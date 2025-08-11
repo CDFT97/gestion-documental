@@ -71,12 +71,6 @@
                   Mi Perfil
                 </router-link>
 
-                <router-link to="/settings" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  @click="showUserMenu = false">
-                  <CogIcon class="h-4 w-4 mr-3" />
-                  Configuración
-                </router-link>
-
                 <hr class="my-1" />
 
                 <button @click="handleLogout" :disabled="loading"

@@ -186,7 +186,6 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import { formatFileSize } from '@/utils/documentUtils'
 import { formatDate } from '@/utils/formatters'
 
-// Props
 const props = defineProps({
   document: {
     type: Object,
@@ -198,26 +197,20 @@ const props = defineProps({
   }
 })
 
-// Emits
 const emit = defineEmits(['close', 'updated'])
 
-// Composable
 const { updateDocument, categories, getCategories, loading, errors, clearErrors } = useDocuments()
 
-// Estado del formulario
 const form = reactive({
   name: '',
   category: '',
   description: ''
 })
 
-// Estado original para detectar cambios
 const originalForm = ref({})
 
-// Flag para controlar inicialización
 const isInitialized = ref(false)
 
-// Computed
 const availableCategories = computed(() => categories.value || [])
 
 const hasChanges = computed(() => {
@@ -230,7 +223,6 @@ const hasChanges = computed(() => {
   )
 })
 
-// Función para inicializar el formulario
 function initializeForm() {
   const doc = props.document
   if (!doc) return
@@ -239,7 +231,6 @@ function initializeForm() {
   form.category = doc.category || ''
   form.description = doc.description || ''
 
-  // Guardar estado original
   originalForm.value = {
     name: form.name,
     category: form.category,
@@ -249,7 +240,6 @@ function initializeForm() {
   isInitialized.value = true
 }
 
-// Función para cargar categorías
 async function loadCategories() {
   try {
     await getCategories()
@@ -258,7 +248,6 @@ async function loadCategories() {
   }
 }
 
-// Función para manejar el envío del formulario
 async function handleSubmit() {
   if (!hasChanges.value) {
     emit('close')
@@ -268,7 +257,6 @@ async function handleSubmit() {
   clearErrors()
 
   try {
-    // Preparar datos para envío - solo enviar campos que han cambiado
     const updateData = {}
 
     if (form.name !== originalForm.value.name) {
@@ -293,7 +281,6 @@ async function handleSubmit() {
   }
 }
 
-// Función para manejar click en backdrop
 function handleBackdropClick() {
   if (hasChanges.value) {
     if (confirm('¿Estás seguro de que quieres cerrar? Se perderán los cambios no guardados.')) {
@@ -304,7 +291,6 @@ function handleBackdropClick() {
   }
 }
 
-// Función para manejar atajos de teclado
 function handleKeydown(event) {
   if (!props.show) return
 
@@ -329,7 +315,6 @@ function handleKeydown(event) {
   }
 }
 
-// Watchers
 watch(() => props.document, (newDocument) => {
   if (newDocument) {
     nextTick(() => {
@@ -344,7 +329,6 @@ watch(() => props.show, (newShow) => {
     loadCategories()
     document.body.style.overflow = 'hidden'
 
-    // Reinicializar el formulario cuando se muestra el modal
     if (props.document) {
       nextTick(() => {
         initializeForm()
@@ -356,7 +340,6 @@ watch(() => props.show, (newShow) => {
   }
 })
 
-// Lifecycle hooks
 onMounted(() => {
   document.addEventListener('keydown', handleKeydown)
 

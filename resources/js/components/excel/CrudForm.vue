@@ -161,29 +161,24 @@ const initializeForm = () => {
 
   props.table.columns.forEach(column => {
     if (props.record) {
-      // Editing - populate with existing data
       let value = props.record.data[column.name]
 
-      // Convert boolean values properly
       if (column.type === 'boolean') {
-        // Handle different boolean representations from backend
         if (value === 1 || value === '1' || value === 'true' || value === true) {
           value = true
         } else if (value === 0 || value === '0' || value === 'false' || value === false) {
           value = false
         } else {
-          value = false // Default fallback
+          value = false
         }
       }
 
-      // Handle number types
       if ((column.type === 'number' || column.type === 'integer' || column.type === 'decimal') && value !== null) {
         value = Number(value)
       }
 
       data[column.name] = value
     } else {
-      // Creating - set default values
       data[column.name] = getDefaultValue(column)
     }
   })
@@ -207,7 +202,6 @@ const getDefaultValue = (column) => {
   }
 }
 
-// Check if field is required
 const isRequired = (column) => {
   // For now, assume all non-nullable fields are required
   return !column.nullable && column.name !== 'id'
@@ -222,7 +216,6 @@ const getFieldClass = (column) => {
   return ''
 }
 
-// Get input CSS class
 const getInputClass = (fieldName) => {
   const baseClass = 'block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500'
 
@@ -245,9 +238,7 @@ const getHelpText = (column) => {
   return helpTexts[column.type] || null
 }
 
-// Handle form submission
 const handleSubmit = () => {
-  // Transform data before sending
   const submitData = { ...formData.value }
 
   // Convert empty strings to null for certain types
@@ -262,12 +253,10 @@ const handleSubmit = () => {
   emit('submit', submitData)
 }
 
-// Handle cancel
 const handleCancel = () => {
   emit('cancel')
 }
 
-// Initialize form when component mounts or props change
 onMounted(() => {
   initializeForm()
 })
@@ -279,7 +268,6 @@ watch(() => [props.record, props.table], () => {
 
 <style scoped>
 
-/* Modal backdrop animation */
 .modal-backdrop {
   animation: fadeIn 0.2s ease-out;
 }

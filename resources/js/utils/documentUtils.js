@@ -14,24 +14,24 @@ export const validateFile = (file) => {
 
   const errors = []
 
-  // Validar tipo MIME
+  // Validate MIME type
   if (!allowedTypes.includes(file.type)) {
     errors.push('Solo se permiten archivos PDF')
   }
 
-  // Validar extensión del archivo
+  // Validate file extension
   const fileName = file.name.toLowerCase()
   const hasValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext))
   if (!hasValidExtension) {
     errors.push('El archivo debe tener extensión .pdf')
   }
 
-  // Validar tamaño
+  // Validate file size
   if (file.size > maxSize) {
     errors.push('El archivo no puede ser mayor a 50MB')
   }
 
-  // Validar que el archivo no esté vacío
+  // Validate file is not empty
   if (file.size === 0) {
     errors.push('El archivo no puede estar vacío')
   }
@@ -99,22 +99,22 @@ export const validateDocumentMetadata = (metadata) => {
   const errors = []
   const cleaned = { ...metadata }
 
-  // Validar nombre
+  // validate name
   if (cleaned.name && cleaned.name.length > 255) {
     errors.push('El nombre no puede exceder 255 caracteres')
   }
 
-  // Validar categoría
+  // validate category
   if (cleaned.category && cleaned.category.length > 100) {
     errors.push('La categoría no puede exceder 100 caracteres')
   }
 
-  // Validar descripción
+  // validate description
   if (cleaned.description && cleaned.description.length > 1000) {
     errors.push('La descripción no puede exceder 1000 caracteres')
   }
 
-  // Limpiar espacios en blanco
+  // clean whitespace
   Object.keys(cleaned).forEach(key => {
     if (typeof cleaned[key] === 'string') {
       cleaned[key] = cleaned[key].trim()
@@ -182,7 +182,7 @@ export const createDocumentFormData = (file, metadata = {}) => {
 
   formData.append('file', file)
 
-  // Agregar metadatos si existen
+  // Add metadata if it exists
   if (metadata.name) formData.append('name', metadata.name)
   if (metadata.category) formData.append('category', metadata.category)
   if (metadata.description) formData.append('description', metadata.description)
@@ -230,18 +230,18 @@ export const extractErrorMessage = (error) => {
 
   const { data, status } = error.response
 
-  // Errores de validación
+  // Error messages from validation
   if (status === 422 && data.errors) {
     const errorMessages = Object.values(data.errors).flat()
     return errorMessages.join(', ')
   }
 
-  // Mensaje específico del servidor
+  // Server-specific message
   if (data.message) {
     return data.message
   }
 
-  // Mensajes por código de estado
+  // Status-specific messages
   const statusMessages = {
     400: 'Solicitud incorrecta',
     401: 'No autorizado',

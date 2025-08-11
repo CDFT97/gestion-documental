@@ -232,7 +232,6 @@ import DocumentEditModal from './DocumentEditModal.vue'
 import { formatFileSize } from '@/utils/documentUtils'
 import { formatDate } from '@/utils/formatters'
 
-// Props
 const props = defineProps({
   document: {
     type: Object,
@@ -244,18 +243,14 @@ const props = defineProps({
   }
 })
 
-// Emits
 const emit = defineEmits(['close', 'updated', 'deleted'])
 
-// Composable
 const { getPreviewUrl, deleteDocument, downloadDocument, deleting } = useDocuments()
 
-// Estado
 const showInfoPanel = ref(true)
 const showEditModal = ref(false)
 const showDeleteModal = ref(false)
 
-// Computed
 const pdfUrl = computed(() => {
   if (!props.document?.id) return ''
   return getPreviewUrl(props.document.id)
@@ -340,7 +335,6 @@ const handleDelete = async () => {
   }
 }
 
-// Lifecycle
 onMounted(() => {
   if (props.show) {
     document.body.style.overflow = 'hidden'

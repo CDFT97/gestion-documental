@@ -133,25 +133,21 @@ const {
   clearErrors
 } = useDocuments()
 
-// Estado local
 const searchQuery = ref('')
 const selectedCategory = ref('')
 const dateFrom = ref('')
 const dateTo = ref('')
 const searchTimeout = ref(null)
 
-// Estado de modales
 const selectedDocument = ref(null)
 const showViewer = ref(false)
 const editingDocument = ref(null)
 const showEditModal = ref(false)
 
-// Computed
 const hasActiveFilters = computed(() => {
   return searchQuery.value || selectedCategory.value || dateFrom.value || dateTo.value
 })
 
-// Métodos
 const refreshDocuments = async () => {
   clearErrors()
   await getDocuments()
@@ -160,7 +156,6 @@ const refreshDocuments = async () => {
 const handleDeleteDocument = async (documentId) => {
   const result = await deleteDocument(documentId)
   if (result.success) {
-    // Si quedamos sin documentos en la página actual y no es la primera, ir a la anterior
     if (documents.value?.data?.length === 0 && pagination.value?.current_page > 1) {
       await goToPage(pagination.value.current_page - 1)
     }
@@ -169,7 +164,6 @@ const handleDeleteDocument = async (documentId) => {
 
 const handleUploadSuccess = async (uploadedDocument) => {
   await refreshDocuments()
-  // Actualizar categorías por si se agregó una nueva
   await getCategories()
 }
 
@@ -205,7 +199,6 @@ const handleDocumentUpdated = async (updatedDocument) => {
   closeEditModal()
 }
 
-// Búsqueda con debounce
 const handleSearch = () => {
   if (searchTimeout.value) {
     clearTimeout(searchTimeout.value)
@@ -217,13 +210,11 @@ const handleSearch = () => {
     if (currentSearchValue) {
       await searchDocuments(currentSearchValue)
     } else {
-      // Si está vacío, usar searchDocuments con string vacío para limpiar el filtro
       await searchDocuments('')
     }
   }, 500)
 }
 
-// Filtro por categoría
 const handleCategoryFilter = async () => {
   if (selectedCategory.value) {
     await filterByCategory(selectedCategory.value)
@@ -232,7 +223,6 @@ const handleCategoryFilter = async () => {
   }
 }
 
-// Filtro por fecha
 const handleDateFilter = async () => {
   if (dateFrom.value || dateTo.value) {
     await filterByDateRange(dateFrom.value, dateTo.value)
@@ -241,7 +231,6 @@ const handleDateFilter = async () => {
   }
 }
 
-// Limpiar todos los filtros
 const clearAllFilters = async () => {
   searchQuery.value = ''
   selectedCategory.value = ''
@@ -251,7 +240,6 @@ const clearAllFilters = async () => {
   await getDocuments()
 }
 
-// Lifecycle
 onMounted(async () => {
   await getDocuments()
   await getCategories()
