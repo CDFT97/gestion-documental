@@ -1,66 +1,89 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Document Management Full Stack
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este proyecto tiene como objetivo principal demostrar la integración y el funcionamiento de la API de WeatherAPI en una aplicación Laravel. Se ha puesto especial énfasis en la implementación de las mejores prácticas y principios de desarrollo en Laravel, abarcando conceptos clave como:
 
-## About Laravel
+-   **Form Requests**: Para validación y autorización de peticiones.
+-   **Middleware**: Para la lógica de pre-procesamiento de peticiones.
+-   **Services**: Para encapsular la lógica de negocio.
+-   **Repositories**: Para la abstracción de la capa de datos.
+-   **Repository Pattern**: Para desacoplar la lógica de acceso a datos.
+-   **Traits**: Para reutilización de código.
+-   **Swagger**: Para la documentación interactiva de la API.
+-   **Vue**: Para la interfaz de usuario.
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## ⚙️ Requisitos
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Antes de comenzar, asegúrate de tener instalados los siguientes componentes:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+-   **PHP**: Versión 8.1 o superior.
+-   **Laravel**: Versión 10 o superior .
+-   **Composer**: Gestor de dependencias de PHP.
+-   **MySQL**: Base de datos relacional.
+-   **Node 22**: Versión de Node.js.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🚀 Instalación
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Sigue los pasos a continuación para configurar y ejecutar el proyecto en tu entorno local:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1.  **Clonar el repositorio**:
+    ```bash
+    git clone <URL_DEL_REPOSITORIO>
+    cd gestion-documental # O el nombre de tu carpeta
+    ```
+2.  **Crear el archivo `.env`**:
+    Copia el archivo de ejemplo y genera tu propio archivo de configuración:
+    ```bash
+    cp .env.example .env
+    ```
+3.  **Instalar dependencias de Composer**:
+    ```bash
+    composer install
+    ```
+3.  **Generar la clave de la aplicación**:
+    ```bash
+    php artisan key:generate
+    ```
+5.  **Ejecutar migraciones**:
+    Esto creará las tablas necesarias en tu base de datos:
+    ```bash
+    php artisan migrate
+    ```
+6.  **Instalar dependencias de Node.js**:
+    Esto poblará la base de datos con datos de prueba:
+    ```bash
+    npm install
+    ```
+8.  **Iniciar el servidor de desarrollo**:
+    ```bash
+    php artisan serve
+    ```
+    El servidor estará disponible usualmente en `http://127.0.0.1:8000`.
+9  **Iniciar el servidor de vite**:
+    ```bash
+    npm run dev
+    ```
+---
 
-## Laravel Sponsors
+## 📄 Documentación (Swagger)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+El proyecto incluye documentación de la API generada con Swagger para facilitar la exploración y el uso de los endpoints.
 
-### Premium Partners
+1.  Asegúrate de tener el plugin [L5-Swagger](https://github.com/DarkaOnline/L5-Swagger) configurado.
+2.  Genera la documentación ejecutando:
+    ```bash
+    php artisan l5-swagger:generate
+    ```
+    La documentación generada se encontrará en el directorio `resources/docs/swagger.json`.
+3.  Para acceder a la documentación interactiva en tu navegador, visita:
+    ```
+    /api/documentation
+    ```
+    (Por ejemplo, `http://127.0.0.1:8000/api/documentation`)
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+---
 
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 📝 Licencia
+Este proyecto está licenciado bajo la licencia MIT.
