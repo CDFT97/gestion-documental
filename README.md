@@ -1,6 +1,6 @@
 # Document Management Full Stack
 
-Este proyecto tiene como objetivo principal demostrar la integración y el funcionamiento de la API de WeatherAPI en una aplicación Laravel. Se ha puesto especial énfasis en la implementación de las mejores prácticas y principios de desarrollo en Laravel, abarcando conceptos clave como:
+Es aplicación Full Stack  de gestión documental que permita autenticación, manejo de archivos Excel, CRUD de datos y visualización de documentos PDF.Se ha puesto especial énfasis en la implementación de las mejores prácticas y principios de desarrollo en Laravel, abarcando conceptos clave como:
 
 -   **Form Requests**: Para validación y autorización de peticiones.
 -   **Middleware**: Para la lógica de pre-procesamiento de peticiones.
@@ -10,6 +10,9 @@ Este proyecto tiene como objetivo principal demostrar la integración y el funci
 -   **Traits**: Para reutilización de código.
 -   **Swagger**: Para la documentación interactiva de la API.
 -   **Vue**: Para la interfaz de usuario.
+-   **Store**: Para la gestión de estado.
+-   **Composables**: Para la reutilización de código.
+-   **Utils**: Para la reutilización de funciones.
 ---
 
 ## ⚙️ Requisitos
