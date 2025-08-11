@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 import { api } from '../api/axios'
-import { useToast } from 'vue-toastification'
+import { useNotifications  } from '@/composables/useNotifications'
 const loading = ref(false)
 const errors = ref({})
 const stats = ref({
@@ -11,7 +11,7 @@ const stats = ref({
 })
 
 export function useProfile() {
-  const toast = useToast()
+  const { notificationsActions } = useNotifications()
 
   const isLoading = computed(() => loading.value)
 
@@ -34,7 +34,7 @@ export function useProfile() {
 
     try {
       const response = await api.put('/api/user/profile', profileData)
-      toast.success('Perfil actualizado exitosamente')
+      notificationsActions.success('Perfil actualizado exitosamente')
       return {
         success: true,
         user: response.data.user,
@@ -44,7 +44,7 @@ export function useProfile() {
     } catch (error) {
       handleValidationErrors(error)
       const message = error.response?.data?.message || 'Error al actualizar el perfil'
-      toast.error(message)
+      notificationsActions.error(message)
       return { success: false, message }
     } finally {
       loading.value = false
@@ -58,13 +58,13 @@ export function useProfile() {
     try {
       await api.put('/api/user/password', passwordData)
 
-      toast.success('Contraseña actualizada exitosamente')
+      notificationsActions.success('Contraseña actualizada exitosamente')
       return { success: true, message: 'Contraseña actualizada exitosamente' }
 
     } catch (error) {
       handleValidationErrors(error)
       const message = error.response?.data?.message || 'Error al cambiar la contraseña'
-      toast.error(message)
+      notificationsActions.error(message)
       return { success: false, message }
     } finally {
       loading.value = false

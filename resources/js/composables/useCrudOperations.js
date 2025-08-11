@@ -1,9 +1,11 @@
 import { ref, computed } from 'vue'
 import { api } from '../api/axios'
-import { useToast } from 'vue-toastification'
+import { useNotifications  } from '@/composables/useNotifications'
+
+
 
 export function useCrudOperations(tableId) {
-  const toast = useToast()
+  const { notificationsActions } = useNotifications()
 
   const records = ref(null)
   const selectedRecords = ref([])
@@ -86,7 +88,7 @@ export function useCrudOperations(tableId) {
     try {
       const response = await api.post(`/api/tables/${tableId}/records`, data)
 
-      toast.success('Registro creado exitosamente')
+      notificationsActions.success('Registro creado exitosamente')
       await loadRecords() 
 
       return { success: true, record: response.data.record }
@@ -106,7 +108,7 @@ export function useCrudOperations(tableId) {
     try {
       const response = await api.put(`/api/tables/${tableId}/records/${recordId}`, data)
 
-      toast.success('Registro actualizado exitosamente')
+      notificationsActions.success('Registro actualizado exitosamente')
       await loadRecords() 
 
       return { success: true, record: response.data.record }
@@ -125,13 +127,13 @@ export function useCrudOperations(tableId) {
     try {
       await api.delete(`/api/tables/${tableId}/records/${recordId}`)
 
-      toast.success('Registro eliminado exitosamente')
+      notificationsActions.success('Registro eliminado exitosamente')
       await loadRecords()
 
       return { success: true }
 
     } catch (error) {
-      toast.error('Error al eliminar el registro')
+      notificationsActions.error('Error al eliminar el registro')
       return { success: false, message: 'Error al eliminar el registro' }
     } finally {
       deleting.value = false
@@ -142,7 +144,7 @@ export function useCrudOperations(tableId) {
     const idsToDelete = recordIds || selectedRecords.value
 
     if (!idsToDelete.length) {
-      toast.error('No hay registros seleccionados')
+      notificationsActions.error('No hay registros seleccionados')
       return { success: false }
     }
 
@@ -153,14 +155,14 @@ export function useCrudOperations(tableId) {
         record_ids: idsToDelete
       })
 
-      toast.success(`${response.data.deleted_count} registros eliminados`)
+      notificationsActions.success(`${response.data.deleted_count} registros eliminados`)
       selectedRecords.value = []
       await loadRecords()
 
       return { success: true, deletedCount: response.data.deleted_count }
 
     } catch (error) {
-      toast.error('Error al eliminar los registros')
+      notificationsActions.error('Error al eliminar los registros')
       return { success: false, message: 'Error al eliminar los registros' }
     } finally {
       deleting.value = false
@@ -171,11 +173,11 @@ export function useCrudOperations(tableId) {
     try {
       const response = await api.post(`/api/tables/${tableId}/export`)
 
-      toast.success('Exportación iniciada')
+      notificationsActions.success('Exportación iniciada')
       return { success: true, data: response.data }
 
     } catch (error) {
-      toast.error('Error al exportar los registros')
+      notificationsActions.error('Error al exportar los registros')
       return { success: false, message: 'Error al exportar' }
     }
   }

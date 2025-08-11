@@ -154,9 +154,9 @@ import { useAuth } from '@/composables/useAuth'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import PasswordStrength from '@/views/auth/components/PasswordStrength.vue'
-import { useToast } from 'vue-toastification'
+import { useNotifications  } from '@/composables/useNotifications'
 
-const toast = useToast()
+const { notificationsActions } = useNotifications()
 const router = useRouter()
 const { register, loading, errors, clearErrors } = useAuth()
 
@@ -202,7 +202,7 @@ const handleSubmit = async () => {
     return router.push('/dashboard')
   }
 
-  toast.error(result.message || 'Error al crear la cuenta')
+  notificationsActions.error(result.message || 'Error al crear la cuenta')
 }
 
 

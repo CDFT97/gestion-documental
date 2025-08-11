@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 import { api, setAuthToken } from '../api/axios'
-import { useToast } from 'vue-toastification'
+import { useNotifications  } from '@/composables/useNotifications'
 
 const user = ref(null)
 const token = ref(localStorage.getItem('token'))
@@ -8,8 +8,8 @@ const loading = ref(false)
 const errors = ref({})
 
 export function useAuth() {
-  const toast = useToast()
-
+  const { notificationsActions } = useNotifications()
+  
   const isAuthenticated = computed(() => !!user.value)
 
   const clearErrors = () => {
@@ -53,7 +53,7 @@ export function useAuth() {
 
       setAuthToken(token.value)
 
-      toast.success(response.data.message || 'Login exitoso')
+      notificationsActions.success(response.data.message || 'Login exitoso')
       return { success: true, message: response.data.message }
 
     } catch (error) {
@@ -76,7 +76,7 @@ export function useAuth() {
 
       setAuthToken(token.value)
 
-      toast.success(response.data.message || 'Registro exitoso')
+      notificationsActions.success(response.data.message || 'Registro exitoso')
       return { success: true, message: response.data.message }
 
     } catch (error) {
@@ -94,7 +94,7 @@ export function useAuth() {
       if (token.value) {
         await api.post('/api/auth/logout')
       }
-      toast.info('Sesión cerrada exitosamente')
+      notificationsActions.info('Sesión cerrada exitosamente')
     } catch (error) {
       console.log('Error en logout:', error)
     } finally {
