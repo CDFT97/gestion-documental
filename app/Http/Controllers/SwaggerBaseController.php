@@ -553,6 +553,206 @@ namespace App\Http\Controllers;
  *         )
  *     )
  * )
+ * 
+ * @OA\Schema(
+ *     schema="UpdateProfileRequest",
+ *     type="object",
+ *     title="Solicitud de Actualización de Perfil",
+ *     description="Datos necesarios para actualizar el perfil del usuario",
+ *     required={"name", "email"},
+ *     @OA\Property(
+ *         property="name",
+ *         type="string",
+ *         minLength=2,
+ *         maxLength=255,
+ *         description="Nombre completo del usuario",
+ *         example="Juan Carlos Pérez"
+ *     ),
+ *     @OA\Property(
+ *         property="email",
+ *         type="string",
+ *         format="email",
+ *         maxLength=255,
+ *         description="Dirección de correo electrónico única",
+ *         example="juan.carlos@example.com"
+ *     )
+ * )
+ *
+ * @OA\Schema(
+ *     schema="UpdatePasswordRequest",
+ *     type="object",
+ *     title="Solicitud de Cambio de Contraseña",
+ *     description="Datos necesarios para cambiar la contraseña del usuario",
+ *     required={"current_password", "password", "password_confirmation"},
+ *     @OA\Property(
+ *         property="current_password",
+ *         type="string",
+ *         format="password",
+ *         description="Contraseña actual del usuario para verificación",
+ *         example="mi_contraseña_actual"
+ *     ),
+ *     @OA\Property(
+ *         property="password",
+ *         type="string",
+ *         format="password",
+ *         minLength=8,
+ *         description="Nueva contraseña que debe cumplir con los requisitos de seguridad: mínimo 8 caracteres, incluir mayúsculas, minúsculas y números",
+ *         example="NuevaContraseña123"
+ *     ),
+ *     @OA\Property(
+ *         property="password_confirmation",
+ *         type="string",
+ *         format="password",
+ *         description="Confirmación de la nueva contraseña (debe coincidir exactamente)",
+ *         example="NuevaContraseña123"
+ *     )
+ * )
+ *
+ * @OA\Schema(
+ *     schema="UpdateProfileResponse",
+ *     type="object",
+ *     title="Respuesta de Actualización de Perfil",
+ *     description="Respuesta exitosa al actualizar el perfil del usuario",
+ *     @OA\Property(property="success", type="boolean", example=true),
+ *     @OA\Property(property="message", type="string", example="Perfil actualizado exitosamente"),
+ *     @OA\Property(property="user", ref="#/components/schemas/User")
+ * )
+ *
+ * @OA\Schema(
+ *     schema="UpdatePasswordResponse",
+ *     type="object",
+ *     title="Respuesta de Cambio de Contraseña",
+ *     description="Respuesta exitosa al cambiar la contraseña del usuario",
+ *     @OA\Property(property="success", type="boolean", example=true),
+ *     @OA\Property(property="message", type="string", example="Contraseña actualizada exitosamente")
+ * )
+ *
+ * @OA\Schema(
+ *     schema="ProfileValidationError",
+ *     type="object",
+ *     title="Error de Validación de Perfil",
+ *     description="Errores específicos de validación para datos de perfil",
+ *     @OA\Property(property="message", type="string", example="Los datos proporcionados no son válidos"),
+ *     @OA\Property(
+ *         property="errors",
+ *         type="object",
+ *         @OA\Property(
+ *             property="name",
+ *             type="array",
+ *             description="Errores relacionados con el nombre",
+ *             @OA\Items(type="string"),
+ *             example={"El nombre es obligatorio", "El nombre debe tener al menos 2 caracteres"}
+ *         ),
+ *         @OA\Property(
+ *             property="email",
+ *             type="array",
+ *             description="Errores relacionados con el email",
+ *             @OA\Items(type="string"),
+ *             example={"El email debe ser una dirección válida", "Este email ya está en uso"}
+ *         )
+ *     )
+ * )
+ *
+ * @OA\Schema(
+ *     schema="PasswordValidationError",
+ *     type="object",
+ *     title="Error de Validación de Contraseña",
+ *     description="Errores específicos de validación para cambio de contraseña",
+ *     @OA\Property(property="message", type="string", example="Los datos proporcionados no son válidos"),
+ *     @OA\Property(
+ *         property="errors",
+ *         type="object",
+ *         @OA\Property(
+ *             property="current_password",
+ *             type="array",
+ *             description="Errores relacionados con la contraseña actual",
+ *             @OA\Items(type="string"),
+ *             example={"La contraseña actual es obligatoria", "La contraseña actual no es correcta"}
+ *         ),
+ *         @OA\Property(
+ *             property="password",
+ *             type="array",
+ *             description="Errores relacionados con la nueva contraseña",
+ *             @OA\Items(type="string"),
+ *             example={
+ *                 "La nueva contraseña es obligatoria",
+ *                 "La contraseña debe tener al menos 8 caracteres",
+ *                 "La contraseña debe contener al menos una letra mayúscula",
+ *                 "La contraseña debe contener al menos una letra minúscula",
+ *                 "La contraseña debe contener al menos un número"
+ *             }
+ *         ),
+ *         @OA\Property(
+ *             property="password_confirmation",
+ *             type="array",
+ *             description="Errores relacionados con la confirmación de contraseña",
+ *             @OA\Items(type="string"),
+ *             example={"La confirmación de contraseña no coincide"}
+ *         )
+ *     )
+ * )
+ *
+ * @OA\Schema(
+ *     schema="UserProfileOperationError",
+ *     type="object",
+ *     title="Error de Operación de Perfil",
+ *     description="Error del servidor durante operaciones de perfil de usuario",
+ *     @OA\Property(property="success", type="boolean", example=false),
+ *     @OA\Property(
+ *         property="message",
+ *         type="string",
+ *         enum={"Error al actualizar el perfil", "Error al cambiar la contraseña"},
+ *         example="Error al actualizar el perfil"
+ *     )
+ * )
+ *
+ * @OA\Schema(
+ *     schema="PasswordRequirements",
+ *     type="object",
+ *     title="Requisitos de Contraseña",
+ *     description="Documentación de los requisitos de seguridad para contraseñas",
+ *     @OA\Property(property="min_length", type="integer", example=8, description="Longitud mínima en caracteres"),
+ *     @OA\Property(property="requires_letters", type="boolean", example=true, description="Debe contener letras"),
+ *     @OA\Property(property="requires_mixed_case", type="boolean", example=true, description="Debe contener mayúsculas y minúsculas"),
+ *     @OA\Property(property="requires_numbers", type="boolean", example=true, description="Debe contener números"),
+ *     @OA\Property(property="requires_confirmation", type="boolean", example=true, description="Requiere confirmación"),
+ *     @OA\Property(
+ *         property="examples",
+ *         type="object",
+ *         @OA\Property(
+ *             property="valid",
+ *             type="array",
+ *             @OA\Items(type="string"),
+ *             example={"MiContraseña123", "Password2024!", "SecurePass99"}
+ *         ),
+ *         @OA\Property(
+ *             property="invalid",
+ *             type="array",
+ *             @OA\Items(type="string"),
+ *             example={"123456", "password", "PASSWORD", "Pass123"}
+ *         )
+ *     )
+ * )
+ *
+ * @OA\Schema(
+ *     schema="UserProfileInfo",
+ *     type="object",
+ *     title="Información de Perfil de Usuario",
+ *     description="Información completa del perfil del usuario para operaciones de actualización",
+ *     @OA\Property(property="id", type="integer", example=1),
+ *     @OA\Property(property="name", type="string", example="Juan Carlos Pérez"),
+ *     @OA\Property(property="email", type="string", format="email", example="juan.carlos@example.com"),
+ *     @OA\Property(property="email_verified_at", type="string", format="date-time", nullable=true, example="2024-01-01T12:00:00Z"),
+ *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-01-01T12:00:00Z"),
+ *     @OA\Property(property="updated_at", type="string", format="date-time", example="2024-01-15T14:30:00Z"),
+ *     @OA\Property(
+ *         property="profile_completion",
+ *         type="object",
+ *         description="Estado de completitud del perfil",
+ *         @OA\Property(property="percentage", type="integer", example=85),
+ *         @OA\Property(property="missing_fields", type="array", @OA\Items(type="string"), example={"phone", "avatar"})
+ *     )
+ * )
  */
 class SwaggerBaseController extends Controller
 {
