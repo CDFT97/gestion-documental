@@ -1,9 +1,9 @@
 import { ref, computed } from 'vue'
 import { api } from '../api/axios'
-import { useToast } from 'vue-toastification'
+import { useNotifications  } from '@/composables/useNotifications'
 
 export function useTables() {
-  const toast = useToast()
+  const { notificationsActions } = useNotifications()
 
   const tables = ref(null)
   const currentTable = ref(null)
@@ -33,7 +33,7 @@ export function useTables() {
 
     } catch (err) {
       error.value = err.response?.data?.message || 'Error al cargar las tablas'
-      toast.error(error.value)
+      notificationsActions.error(error.value)
       return { success: false, message: error.value }
     } finally {
       loading.value = false
@@ -52,7 +52,7 @@ export function useTables() {
 
     } catch (err) {
       tableError.value = err.response?.data?.message || 'Error al cargar la tabla'
-      toast.error(tableError.value)
+      notificationsActions.error(tableError.value)
       return { success: false, message: tableError.value }
     } finally {
       tableLoading.value = false
@@ -63,7 +63,7 @@ export function useTables() {
     try {
       await api.delete(`/api/tables/${tableId}`)
 
-      toast.success('Tabla eliminada exitosamente')
+      notificationsActions.success('Tabla eliminada exitosamente')
 
       if (tables.value?.data) {
         const index = tables.value.data.findIndex(table => table.id === tableId)
@@ -77,7 +77,7 @@ export function useTables() {
 
     } catch (err) {
       const message = err.response?.data?.message || 'Error al eliminar la tabla'
-      toast.error(message)
+      notificationsActions.error(message)
       return { success: false, message }
     }
   }
@@ -86,7 +86,7 @@ export function useTables() {
     try {
       const response = await api.put(`/api/tables/${tableId}`, data)
 
-      toast.success('Tabla actualizada exitosamente')
+      notificationsActions.success('Tabla actualizada exitosamente')
 
       if (currentTable.value?.id === tableId) {
         currentTable.value = { ...currentTable.value, ...response.data.table }
@@ -103,7 +103,7 @@ export function useTables() {
 
     } catch (err) {
       const message = err.response?.data?.message || 'Error al actualizar la tabla'
-      toast.error(message)
+      notificationsActions.error(message)
       return { success: false, message }
     }
   }
@@ -123,7 +123,7 @@ export function useTables() {
     try {
       const response = await api.post(`/api/tables/${tableId}/duplicate`)
 
-      toast.success('Tabla duplicada exitosamente')
+      notificationsActions.success('Tabla duplicada exitosamente')
 
       if (tables.value?.data) {
         tables.value.data.unshift(response.data)
@@ -134,7 +134,7 @@ export function useTables() {
 
     } catch (err) {
       const message = err.response?.data?.message || 'Error al duplicar la tabla'
-      toast.error(message)
+      notificationsActions.error(message)
       return { success: false, message }
     }
   }
@@ -167,12 +167,12 @@ export function useTables() {
       link.remove()
       window.URL.revokeObjectURL(url)
 
-      toast.success('Tabla exportada exitosamente')
+      notificationsActions.success('Tabla exportada exitosamente')
       return { success: true }
 
     } catch (err) {
       const message = err.response?.data?.message || 'Error al exportar la tabla'
-      toast.error(message)
+      notificationsActions.error(message)
       return { success: false, message }
     }
   }

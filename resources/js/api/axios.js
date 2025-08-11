@@ -1,7 +1,8 @@
 
 import axios from 'axios'
-import { useToast } from 'vue-toastification'
+import { useNotifications  } from '@/composables/useNotifications'
 
+const { notificationsActions } = useNotifications()
 const apiClient = axios.create({
   baseURL: window.location.origin,
   timeout: 10000,
@@ -33,7 +34,6 @@ apiClient.interceptors.response.use(
     return response
   },
   (error) => {
-    const toast = useToast()
 
     if (error.response) {
       const { status, data } = error.response
@@ -45,7 +45,7 @@ apiClient.interceptors.response.use(
 
           // Only show toast if we are not in login/register
           if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
-            toast.error('Sesión expirada. Por favor, inicia sesión nuevamente.')
+            notificationsActions.error('Sesión expirada. Por favor, inicia sesión nuevamente.')
             setTimeout(() => {
               window.location.href = '/login'
             }, 1500)
@@ -53,33 +53,33 @@ apiClient.interceptors.response.use(
           break
 
         case 403:
-          toast.error('No tienes permisos para realizar esta acción.')
+          notificationsActions.error('No tienes permisos para realizar esta acción.')
           break
 
         case 404:
-          toast.error('Recurso no encontrado.')
+          notificationsActions.error('Recurso no encontrado.')
           break
 
         case 422:
           break
 
         case 429:
-          toast.error('Demasiadas solicitudes. Intenta nuevamente en unos minutos.')
+          notificationsActions.error('Demasiadas solicitudes. Intenta nuevamente en unos minutos.')
           break
 
         case 500:
-          toast.error('Error interno del servidor. Intenta nuevamente más tarde.')
+          notificationsActions.error('Error interno del servidor. Intenta nuevamente más tarde.')
           break
 
         default:
-          toast.error(data?.message || 'Ha ocurrido un error inesperado.')
+          notificationsActions.error(data?.message || 'Ha ocurrido un error inesperado.')
       }
     } else if (error.request) {
       // Red error
-      toast.error('Error de conexión. Verifica tu conexión a internet.')
+      notificationsActions.error('Error de conexión. Verifica tu conexión a internet.')
     } else {
       // Other errors
-      toast.error('Ha ocurrido un error inesperado.')
+      notificationsActions.error('Ha ocurrido un error inesperado.')
     }
 
     return Promise.reject(error)

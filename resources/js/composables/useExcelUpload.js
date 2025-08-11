@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { api } from '../api/axios'
-import { useToast } from 'vue-toastification'
+import { useNotifications  } from '@/composables/useNotifications'
+
 
 const loading = ref(false)
 const uploading = ref(false)
@@ -11,8 +12,7 @@ const previewData = ref(null)
 const processedTable = ref(null)
 
 export function useExcelUpload() {
-  const toast = useToast()
-
+  const { notificationsActions } = useNotifications()
   const isUploaded = computed(() => !!uploadedFile.value)
   const isProcessed = computed(() => !!processedTable.value)
   const hasPreview = computed(() => !!previewData.value)
@@ -55,7 +55,7 @@ export function useExcelUpload() {
 
       previewData.value = response.data.preview
 
-      toast.success('Archivo cargado exitosamente')
+      notificationsActions.success('Archivo cargado exitosamente')
       return { success: true, data: response.data }
 
     } catch (error) {
@@ -68,7 +68,7 @@ export function useExcelUpload() {
 
   const processFile = async () => {
     if (!uploadedFile.value) {
-      toast.error('No hay archivo para procesar')
+      notificationsActions.error('No hay archivo para procesar')
       return { success: false }
     }
 
@@ -83,7 +83,7 @@ export function useExcelUpload() {
 
       processedTable.value = response.data.table
 
-      toast.success('Archivo procesado exitosamente')
+      notificationsActions.success('Archivo procesado exitosamente')
       return { success: true, table: response.data.table }
 
     } catch (error) {

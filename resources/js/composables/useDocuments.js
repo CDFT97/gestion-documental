@@ -1,6 +1,6 @@
 import { ref, reactive, computed } from 'vue'
 import { api } from '../api/axios'
-import { useToast } from 'vue-toastification'
+import { useNotifications  } from '@/composables/useNotifications'
 import {
   validateFile,
   formatFileSize,
@@ -12,6 +12,7 @@ import {
   validateDateRange
 } from '@/utils/documentUtils'
 
+const { notificationsActions } = useNotifications()
 const loading = ref(false)
 const uploading = ref(false)
 const deleting = ref(false)
@@ -38,8 +39,6 @@ const filters = reactive({
 })
 
 export function useDocuments() {
-  const toast = useToast()
-
   // Computed properties
   const hasDocuments = computed(() => documents.value.length > 0)
   const totalDocuments = computed(() => pagination.total)
@@ -162,7 +161,7 @@ export function useDocuments() {
 
       pagination.total += 1
 
-      toast.success(response.data.message || 'Documento subido exitosamente')
+      notificationsActions.success(response.data.message || 'Documento subido exitosamente')
 
       return {
         success: true,
@@ -200,7 +199,7 @@ export function useDocuments() {
         currentDocument.value = response.data.document
       }
 
-      toast.success(response.data.message || 'Documento actualizado exitosamente')
+      notificationsActions.success(response.data.message || 'Documento actualizado exitosamente')
 
       return { success: true, document: response.data.document }
 
@@ -227,7 +226,7 @@ export function useDocuments() {
 
       pagination.total = Math.max(0, pagination.total - 1)
 
-      toast.success(response.data.message || 'Documento eliminado exitosamente')
+      notificationsActions.success(response.data.message || 'Documento eliminado exitosamente')
 
       return { success: true }
 

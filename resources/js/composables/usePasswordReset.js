@@ -1,12 +1,11 @@
 import { ref } from 'vue'
 import { api } from '../api/axios'
-import { useToast } from 'vue-toastification'
-
+import { useNotifications  } from '@/composables/useNotifications'
 const loading = ref(false)
 const errors = ref({})
 
 export function usePasswordReset() {
-  const toast = useToast()
+  const { notificationsActions } = useNotifications()
 
   const clearErrors = () => {
     errors.value = {}
@@ -28,7 +27,7 @@ export function usePasswordReset() {
     try {
       const response = await api.post('/api/auth/forgot-password', { email })
 
-      toast.success(response.data.message || 'Link enviado a tu email')
+      notificationsActions.success(response.data.message || 'Link enviado a tu email')
       return { success: true, message: response.data.message }
 
     } catch (error) {
@@ -46,7 +45,7 @@ export function usePasswordReset() {
     try {
       const response = await api.post('/api/auth/reset-password', data)
 
-      toast.success(response.data.message || 'Contraseña restablecida exitosamente')
+      notificationsActions.success(response.data.message || 'Contraseña restablecida exitosamente')
       return { success: true, message: response.data.message }
 
     } catch (error) {
