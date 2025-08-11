@@ -89,4 +89,4 @@ El proyecto incluye documentación de la API generada con Swagger para facilitar
 ---
 
 ## 📝 Licencia
-Este proyecto está licenciado bajo la licencia MIT.
+Este proyecto está licenciado bajo la licencia MIT..
