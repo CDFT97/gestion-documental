@@ -37,10 +37,10 @@
             Agregar
           </button>
 
-          <button @click="handleExport" :disabled="!hasRecords" class="btn-secondary flex items-center">
+          <!-- <button @click="handleExport" :disabled="!hasRecords" class="btn-secondary flex items-center">
             <ArrowDownTrayIcon class="h-4 w-4 mr-2" />
             Exportar
-          </button>
+          </button> -->
 
           <div v-if="hasSelection" class="flex items-center space-x-2">
             <span class="text-sm text-gray-600">
