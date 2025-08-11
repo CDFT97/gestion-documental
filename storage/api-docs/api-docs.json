@@ -1,0 +1,1728 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Gestión Documental API",
+        "description": "API para gestionar documentos y tablas a partir de excels y PDFs",
+        "contact": {
+            "email": "febrescesar7@gmail.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api",
+            "description": "Servidor Local"
+        },
+        {
+            "url": "http://localhost:8000",
+            "description": "Servidor Local (Base)"
+        }
+    ],
+    "paths": {
+        "/auth/register": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Registrar un nuevo usuario",
+                "description": "Crea una nueva cuenta de usuario y retorna un token de acceso",
+                "operationId": "register",
+                "requestBody": {
+                    "description": "Datos del usuario a registrar",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Juan Pérez"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "maxLength": 255,
+                                        "example": "juan@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "minLength": 8,
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "minLength": 8,
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuario registrado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Usuario registrado exitosamente"
+                                        },
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|abcdef123456789..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error de validación"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "email": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Este email ya está registrado."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Iniciar sesión",
+                "description": "Autentica un usuario y retorna un token de acceso",
+                "operationId": "login",
+                "requestBody": {
+                    "description": "Credenciales de acceso",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "juan@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login exitoso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login exitoso"
+                                        },
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "2|abcdef123456789..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Credenciales incorrectas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "email": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Las credenciales proporcionadas son incorrectas."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Cerrar sesión",
+                "description": "Invalida el token de acceso actual del usuario",
+                "operationId": "logout",
+                "responses": {
+                    "200": {
+                        "description": "Logout exitoso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logout exitoso"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autenticado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/user": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Obtener datos del usuario autenticado",
+                "description": "Retorna los datos completos del usuario autenticado con estadísticas",
+                "operationId": "getAuthenticatedUser",
+                "parameters": [
+                    {
+                        "name": "include",
+                        "in": "query",
+                        "description": "Incluir relaciones adicionales (tables, documents)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "tables",
+                                "documents"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Datos del usuario",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autenticado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/auth/forgot-password": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Solicitar restablecimiento de contraseña",
+                "description": "Envía un enlace de restablecimiento de contraseña al email del usuario",
+                "operationId": "forgotPassword",
+                "requestBody": {
+                    "description": "Email del usuario",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "juan@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Enlace enviado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Enlace de restablecimiento enviado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error de validación"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "email": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "No encontramos un usuario con este email."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/reset-password": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Restablecer contraseña",
+                "description": "Restablece la contraseña del usuario usando el token recibido por email",
+                "operationId": "resetPassword",
+                "requestBody": {
+                    "description": "Datos para restablecer contraseña",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "token",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "type": "string",
+                                        "example": "abcdef123456789..."
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "juan@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "minLength": 8,
+                                        "example": "newpassword123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "minLength": 8,
+                                        "example": "newpassword123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Contraseña restablecida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Contraseña restablecida exitosamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error de validación"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "token": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Token de reseteo requerido."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/documents/upload": {
+            "post": {
+                "tags": [
+                    "Documents"
+                ],
+                "summary": "Subir un nuevo documento PDF",
+                "description": "Permite subir un archivo PDF al sistema con metadatos opcionales",
+                "operationId": "uploadDocument",
+                "requestBody": {
+                    "description": "Archivo PDF y metadatos",
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "file"
+                                ],
+                                "properties": {
+                                    "file": {
+                                        "description": "Archivo PDF (máximo 50MB)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "name": {
+                                        "description": "Nombre personalizado del documento",
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Contrato de servicios 2024"
+                                    },
+                                    "category": {
+                                        "description": "Categoría del documento",
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "contratos"
+                                    },
+                                    "description": {
+                                        "description": "Descripción del documento",
+                                        "type": "string",
+                                        "maxLength": 1000,
+                                        "example": "Contrato anual de servicios de consultoría"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Documento subido exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Documento subido exitosamente"
+                                        },
+                                        "document": {
+                                            "$ref": "#/components/schemas/Document"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error de validación"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "file": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Solo se permiten archivos PDF."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error al subir el documento"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalle del error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/documents": {
+            "get": {
+                "tags": [
+                    "Documents"
+                ],
+                "summary": "Obtener lista paginada de documentos",
+                "description": "Retorna una lista paginada de documentos del usuario con filtros opcionales",
+                "operationId": "getDocuments",
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Número de elementos por página (1-100)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Término de búsqueda en nombre y descripción",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 255
+                        }
+                    },
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "description": "Filtrar por categoría",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 100
+                        }
+                    },
+                    {
+                        "name": "date_from",
+                        "in": "query",
+                        "description": "Filtrar documentos desde esta fecha",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2024-01-01"
+                        }
+                    },
+                    {
+                        "name": "date_to",
+                        "in": "query",
+                        "description": "Filtrar documentos hasta esta fecha",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2024-12-31"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de documentos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error al obtener los documentos"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalle del error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/documents/{id}": {
+            "get": {
+                "tags": [
+                    "Documents"
+                ],
+                "summary": "Obtener un documento específico",
+                "description": "Retorna los detalles de un documento específico del usuario",
+                "operationId": "getDocument",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del documento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalles del documento",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "document": {
+                                            "$ref": "#/components/schemas/Document"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Documento no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Documento no encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error al obtener el documento"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalle del error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Documents"
+                ],
+                "summary": "Actualizar información del documento",
+                "description": "Actualiza los metadatos de un documento (nombre, categoría, descripción)",
+                "operationId": "updateDocument",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del documento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Datos a actualizar",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Nuevo nombre del documento"
+                                    },
+                                    "category": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "nueva-categoria"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "maxLength": 1000,
+                                        "example": "Nueva descripción del documento"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Documento actualizado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Documento actualizado exitosamente"
+                                        },
+                                        "document": {
+                                            "$ref": "#/components/schemas/Document"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Documento no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Documento no encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error al actualizar el documento"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalle del error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Documents"
+                ],
+                "summary": "Eliminar documento",
+                "description": "Elimina un documento del sistema incluyendo el archivo físico",
+                "operationId": "deleteDocument",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del documento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Documento eliminado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Documento eliminado exitosamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Documento no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Documento no encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error al eliminar el documento"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalle del error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/documents/{id}/preview": {
+            "get": {
+                "tags": [
+                    "Documents"
+                ],
+                "summary": "Vista previa del documento PDF",
+                "description": "Obtiene el contenido del PDF para mostrar en el navegador. Puede usar autenticación Bearer o token en query parameter",
+                "operationId": "previewDocument",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del documento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "Token de autenticación alternativo",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Contenido del PDF",
+                        "content": {
+                            "application/pdf": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No autorizado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Documento no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Documento no encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error al obtener la vista previa"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalle del error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {}
+                ]
+            }
+        },
+        "/documents/{id}/preview/download": {
+            "get": {
+                "tags": [
+                    "Documents"
+                ],
+                "summary": "Descargar documento PDF",
+                "description": "Descarga el archivo PDF del documento",
+                "operationId": "downloadDocument",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del documento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Archivo PDF para descarga",
+                        "content": {
+                            "application/pdf": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Documento no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Documento no encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error al obtener el documento"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalle del error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/documents/categories": {
+            "get": {
+                "tags": [
+                    "Documents"
+                ],
+                "summary": "Obtener categorías disponibles",
+                "description": "Retorna la lista de categorías únicas de documentos del usuario",
+                "operationId": "getDocumentCategories",
+                "responses": {
+                    "200": {
+                        "description": "Lista de categorías",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "categories": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "example": [
+                                                "contratos",
+                                                "reportes",
+                                                "facturas",
+                                                "general"
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error al obtener las categorías"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalle del error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "User": {
+                "title": "Usuario",
+                "description": "Modelo de usuario básico",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Juan Pérez"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "juan@example.com"
+                    },
+                    "email_verified_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "UserResource": {
+                "title": "Recurso de Usuario Completo",
+                "description": "Información completa del usuario con estadísticas",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Juan Pérez"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "juan@example.com"
+                    },
+                    "email_verified_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    },
+                    "tables_stats": {
+                        "properties": {
+                            "total_tables": {
+                                "type": "integer",
+                                "example": 5
+                            },
+                            "total_records": {
+                                "type": "integer",
+                                "example": 1500
+                            },
+                            "total_size_bytes": {
+                                "type": "integer",
+                                "example": 2048576
+                            },
+                            "total_size_formatted": {
+                                "type": "string",
+                                "example": "2.05 MB"
+                            },
+                            "completed_tables": {
+                                "type": "integer",
+                                "example": 4
+                            },
+                            "processing_tables": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "failed_tables": {
+                                "type": "integer",
+                                "example": 0
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "documents_stats": {
+                        "properties": {
+                            "total_documents": {
+                                "type": "integer",
+                                "example": 10
+                            },
+                            "total_size_bytes": {
+                                "type": "integer",
+                                "example": 5242880
+                            },
+                            "total_size_formatted": {
+                                "type": "string",
+                                "example": "5.24 MB"
+                            },
+                            "active_documents": {
+                                "type": "integer",
+                                "example": 8
+                            },
+                            "categories_count": {
+                                "type": "integer",
+                                "example": 3
+                            },
+                            "categories": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "example": [
+                                    "reports",
+                                    "contracts",
+                                    "invoices"
+                                ]
+                            },
+                            "documents_by_category": {
+                                "properties": {
+                                    "reports": {
+                                        "type": "integer",
+                                        "example": 4
+                                    },
+                                    "contracts": {
+                                        "type": "integer",
+                                        "example": 3
+                                    },
+                                    "invoices": {
+                                        "type": "integer",
+                                        "example": 3
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "largest_document_size": {
+                                "type": "integer",
+                                "example": 1048576
+                            },
+                            "largest_document_size_formatted": {
+                                "type": "string",
+                                "example": "1.05 MB"
+                            },
+                            "most_recent_upload": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-01-15T10:30:00Z"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "storage_stats": {
+                        "properties": {
+                            "total_storage_used_bytes": {
+                                "type": "integer",
+                                "example": 7291456
+                            },
+                            "total_storage_used_formatted": {
+                                "type": "string",
+                                "example": "7.29 MB"
+                            },
+                            "tables_storage_percentage": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 28.09
+                            },
+                            "documents_storage_percentage": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 71.91
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "activity": {
+                        "properties": {
+                            "last_table_created": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-01-10T14:20:00Z"
+                            },
+                            "last_document_uploaded": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-01-15T10:30:00Z"
+                            },
+                            "last_activity": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-01-15T10:30:00Z"
+                            },
+                            "account_age_days": {
+                                "type": "integer",
+                                "example": 45
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "ValidationError": {
+                "title": "Error de Validación",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Error de validación"
+                    },
+                    "errors": {
+                        "properties": {
+                            "field_name": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "example": [
+                                    "Este campo es obligatorio."
+                                ]
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "status": {
+                        "type": "boolean",
+                        "example": false
+                    }
+                },
+                "type": "object"
+            },
+            "AuthResponse": {
+                "title": "Respuesta de Autenticación",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Login exitoso"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    },
+                    "token": {
+                        "type": "string",
+                        "example": "1|abcdefghijklmnopqrstuvwxyz123456789"
+                    }
+                },
+                "type": "object"
+            },
+            "MessageResponse": {
+                "title": "Respuesta con Mensaje",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Operación exitosa"
+                    }
+                },
+                "type": "object"
+            },
+            "Document": {
+                "title": "Documento",
+                "description": "Modelo de documento PDF",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Contrato de servicios 2024"
+                    },
+                    "original_filename": {
+                        "type": "string",
+                        "example": "contrato_servicios.pdf"
+                    },
+                    "file_size": {
+                        "description": "Tamaño en bytes",
+                        "type": "integer",
+                        "example": 2048576
+                    },
+                    "file_size_formatted": {
+                        "type": "string",
+                        "example": "2.05 MB"
+                    },
+                    "mime_type": {
+                        "type": "string",
+                        "example": "application/pdf"
+                    },
+                    "category": {
+                        "type": "string",
+                        "example": "contratos"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Contrato anual de servicios de consultoría",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "archived",
+                            "deleted"
+                        ],
+                        "example": "active"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "metadata": {
+                        "properties": {
+                            "pdf_info": {
+                                "properties": {
+                                    "pages": {
+                                        "type": "integer",
+                                        "example": 15
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Título del PDF",
+                                        "nullable": true
+                                    },
+                                    "author": {
+                                        "type": "string",
+                                        "example": "Autor del PDF",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "upload_info": {
+                                "type": "object"
+                            },
+                            "processing_info": {
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedResponse": {
+                "title": "Respuesta Paginada",
+                "properties": {
+                    "current_page": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "first_page_url": {
+                        "type": "string",
+                        "example": "http://localhost:8000/api/endpoint?page=1"
+                    },
+                    "from": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "last_page": {
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "last_page_url": {
+                        "type": "string",
+                        "example": "http://localhost:8000/api/endpoint?page=10"
+                    },
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "next_page_url": {
+                        "type": "string",
+                        "example": "http://localhost:8000/api/endpoint?page=2",
+                        "nullable": true
+                    },
+                    "path": {
+                        "type": "string",
+                        "example": "http://localhost:8000/api/endpoint"
+                    },
+                    "per_page": {
+                        "type": "integer",
+                        "example": 15
+                    },
+                    "prev_page_url": {
+                        "type": "string",
+                        "example": null,
+                        "nullable": true
+                    },
+                    "to": {
+                        "type": "integer",
+                        "example": 15
+                    },
+                    "total": {
+                        "type": "integer",
+                        "example": 150
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "responses": {
+            "UnauthorizedError": {
+                "description": "No autorizado (token inválido o ausente)",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "example": "Acceso no autorizado. Por favor, proporcione un token de autenticación válido."
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "error"
+                                },
+                                "code": {
+                                    "type": "integer",
+                                    "example": 40101
+                                },
+                                "timestamp": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "example": "2024-06-06T12:30:00.000000Z"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Ingresa tu token de Sanctum en el formato: Bearer {token}",
+                "bearerFormat": "Sanctum",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Authentication",
+            "description": "Endpoints para autenticación de usuarios"
+        },
+        {
+            "name": "Documents",
+            "description": "Gestión de documentos PDF"
+        }
+    ]
+}

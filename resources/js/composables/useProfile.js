@@ -81,7 +81,6 @@ export function useProfile() {
     // Methods
     updateProfile,
     changePassword,
-    getStats,
     clearErrors
   }
 }
